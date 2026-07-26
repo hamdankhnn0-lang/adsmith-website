@@ -12,6 +12,14 @@ const fieldBase =
 const chevron =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'><path d='M2.5 4.5 6 8l3.5-3.5' stroke='white' stroke-opacity='0.45' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/></svg>\")"
 
+/**
+ * Where submissions go. Set VITE_FORM_ENDPOINT in `.env` to a Formspree form
+ * URL, an n8n webhook, or any URL that accepts a JSON POST — see the README.
+ * Left empty, the form runs in demo mode: it validates and shows the success
+ * state, but sends nothing.
+ */
+const FORM_ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT ?? ''
+
 const initialForm = {
   name: '',
   email: '',
@@ -39,22 +47,22 @@ function Field({ label, htmlFor, error, children }) {
   )
 }
 
-/**
- * Front-end only. Point `submit` at your form endpoint (Formspree, Resend,
- * an n8n webhook, etc.) — the success state is already wired.
- */
 function ContactForm() {
   const [form, setForm] = useState(initialForm)
   const [errors, setErrors] = useState({})
-  const [sent, setSent] = useState(false)
+  const [status, setStatus] = useState('idle') // idle | sending | sent | error
+  // Bots fill hidden inputs; humans never see this one.
+  const [trap, setTrap] = useState('')
 
   const update = (key) => (e) => {
     setForm((f) => ({ ...f, [key]: e.target.value }))
     setErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev))
   }
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
+    if (status === 'sending') return
+
     const next = {}
     if (!form.name.trim()) next.name = 'Please tell us your name.'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim()))
@@ -65,12 +73,39 @@ function ContactForm() {
     setErrors(next)
     if (Object.keys(next).length > 0) return
 
-    // TODO: replace with a real submission (POST to your endpoint / n8n webhook).
-    setSent(true)
-    setForm(initialForm)
+    // Silently accept the spam so the bot does not learn it was caught.
+    if (trap) {
+      setStatus('sent')
+      return
+    }
+
+    if (!FORM_ENDPOINT) {
+      setStatus('sent')
+      setForm(initialForm)
+      return
+    }
+
+    setStatus('sending')
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          service: form.service || 'Not specified',
+          submittedAt: new Date().toISOString(),
+          page: window.location.href,
+        }),
+      })
+      if (!res.ok) throw new Error(`Endpoint returned ${res.status}`)
+      setStatus('sent')
+      setForm(initialForm)
+    } catch {
+      setStatus('error')
+    }
   }
 
-  if (sent) {
+  if (status === 'sent') {
     return (
       <div className="flex min-h-[420px] flex-col items-start justify-center rounded-2xl border border-white/10 bg-white/[0.03] p-8 sm:p-10">
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-forge-500 text-white">
@@ -83,7 +118,7 @@ function ContactForm() {
         </p>
         <button
           type="button"
-          onClick={() => setSent(false)}
+          onClick={() => setStatus('idle')}
           className="mt-8 text-[0.88rem] font-medium text-forge-300 underline underline-offset-4 transition-colors hover:text-white"
         >
           Send another enquiry
@@ -96,7 +131,7 @@ function ContactForm() {
     <form
       onSubmit={submit}
       noValidate
-      className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8"
+      className="relative rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8"
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Name" htmlFor="name" error={errors.name}>
@@ -176,9 +211,37 @@ function ContactForm() {
         </Field>
       </div>
 
+      {/* Honeypot — hidden from people, irresistible to bots. */}
+      <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
+        <label htmlFor="website">Leave this field empty</label>
+        <input
+          id="website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={trap}
+          onChange={(e) => setTrap(e.target.value)}
+        />
+      </div>
+
+      {status === 'error' && (
+        <p
+          role="alert"
+          className="mt-6 rounded-xl border border-forge-500/40 bg-forge-500/10 px-4 py-3.5 text-[0.88rem] leading-relaxed text-white/80"
+        >
+          That didn&rsquo;t send — the form service didn&rsquo;t respond. Try once more, or email
+          us directly at{' '}
+          <a href={`mailto:${brand.email}`} className="text-forge-300 underline underline-offset-4">
+            {brand.email}
+          </a>
+          .
+        </p>
+      )}
+
       <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Button as="button" type="submit" size="lg" withArrow>
-          Request free audit
+        <Button as="button" type="submit" size="lg" withArrow disabled={status === 'sending'}>
+          {status === 'sending' ? 'Sending…' : 'Request free audit'}
         </Button>
         <p className="text-[0.78rem] leading-relaxed text-white/35 sm:max-w-[24ch]">
           No pitch decks. A written audit and a straight answer.
