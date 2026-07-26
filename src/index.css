@@ -19,6 +19,11 @@
   --color-smoke-500: #6f6f6d;
   --color-smoke-600: #4a4a48;
 
+  /* Cool near-black for the services bento — the neutral is biased toward the
+     brand blue so it reads as a chosen ground, not a default black. */
+  --color-void: #07080b;
+  --color-void-raised: #0d0f15;
+
   --color-forge-50: #eef2ff;
   --color-forge-100: #dde5ff;
   --color-forge-300: #93a9ff;
@@ -145,6 +150,30 @@
   background-image: linear-gradient(to right, rgb(10 10 10 / 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(10 10 10 / 0.05) 1px, transparent 1px);
   background-size: 84px 84px;
+}
+
+/* A 1px gradient ring drawn with two masks so only the border shows. Sits as
+   an overlay inside a card and fades in on hover. */
+@utility gradient-ring {
+  padding: 1px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+/* Pointer-tracked glow. --mx/--my are written by the card's pointermove
+   handler; they fall back to the card centre so it degrades on touch. */
+@utility pointer-glow {
+  background: radial-gradient(
+    22rem circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in oklab, var(--color-forge-500) 16%, transparent),
+    transparent 70%
+  );
 }
 
 /* Subtle film grain so large flat areas never look plasticky. */

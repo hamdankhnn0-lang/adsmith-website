@@ -6,6 +6,7 @@ const tones = {
   light: 'bg-paper text-ink',
   mist: 'bg-mist text-ink',
   dark: 'bg-ink text-white',
+  void: 'bg-void text-white',
 }
 
 export default function Section({

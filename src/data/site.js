@@ -27,63 +27,70 @@ export const heroStats = [
   { value: '11', label: 'Industries served' },
 ]
 
+/**
+ * `size` drives the bento grid: 'lg' is a 2×2 hero tile, 'wide' spans the full
+ * row, everything else is a single cell. `icon` maps to a Lucide component in
+ * Services.jsx.
+ */
 export const services = [
+  {
+    id: 'automation',
+    icon: 'workflow',
+    name: 'n8n & AI Automation',
+    summary:
+      'Custom n8n workflows and AI agents that handle the follow-up, reporting and admin your team no longer should.',
+    chips: ['n8n Workflows', 'AI Agents', 'CRM Sync', 'Reporting'],
+    size: 'lg',
+    featured: true,
+  },
   {
     id: 'meta-ads',
     icon: 'meta',
     name: 'Meta Ads',
     summary:
-      'Facebook and Instagram campaigns engineered around creative testing, clean tracking and profitable scale.',
-    detail: 'Creative sprints · CAPI tracking · Retargeting architecture',
+      'Facebook and Instagram campaigns engineered around creative testing and profitable scale.',
+    chips: ['Creative Testing', 'CAPI Tracking', 'Retargeting', 'Analytics'],
   },
   {
     id: 'google-ads',
     icon: 'search',
     name: 'Google Ads',
     summary:
-      'Search, Display and Performance Max structured to capture demand at the exact moment intent appears.',
-    detail: 'Search · PMax · Display · Shopping feeds',
+      'Structured to capture demand at the exact moment buying intent appears.',
+    chips: ['Search', 'Performance Max', 'Shopping', 'Display'],
   },
   {
     id: 'tiktok-ads',
-    icon: 'wave',
+    icon: 'video',
     name: 'TikTok Ads',
     summary:
-      'Native, scroll-stopping creative paired with disciplined media buying that turns attention into revenue.',
-    detail: 'UGC pipelines · Spark Ads · Hook testing',
+      'Native, scroll-stopping creative paired with disciplined media buying.',
+    chips: ['UGC', 'Spark Ads', 'Hook Testing', 'Creators'],
   },
   {
     id: 'social',
-    icon: 'grid',
-    name: 'Social Media Management',
+    icon: 'social',
+    name: 'Social Media',
     summary:
-      'A consistent, editorial content engine that keeps your brand looking as premium as the product you sell.',
-    detail: 'Content calendars · Design · Community',
+      'An editorial content engine that keeps your brand as premium as the product.',
+    chips: ['Content', 'Reels', 'Strategy', 'Branding'],
   },
   {
     id: 'gmb',
     icon: 'pin',
     name: 'Google Business Profile',
     summary:
-      'Local visibility done properly — optimised listings, review velocity and map-pack rankings that convert.',
-    detail: 'GMB optimisation · Reviews · Local SEO',
+      'Local visibility done properly — listings, reviews and map-pack rankings.',
+    chips: ['Listings', 'Reviews', 'Local SEO', 'Maps'],
   },
   {
     id: 'web',
-    icon: 'layers',
+    icon: 'web',
     name: 'Website Development',
     summary:
-      'Fast, elegant sites and landing pages built to load instantly, rank well and turn traffic into bookings.',
-    detail: 'Landing pages · CRO · Headless builds',
-  },
-  {
-    id: 'automation',
-    icon: 'circuit',
-    name: 'n8n & AI Automation',
-    summary:
-      'Custom n8n workflows and AI agents that handle the follow-up, reporting and admin your team no longer should.',
-    detail: 'n8n workflows · AI agents · CRM sync',
-    featured: true,
+      'Fast, elegant sites and landing pages built to load instantly, rank well and turn traffic into booked business.',
+    chips: ['Landing Pages', 'CRO', 'Headless', 'Core Web Vitals'],
+    size: 'wide',
   },
 ]
 
