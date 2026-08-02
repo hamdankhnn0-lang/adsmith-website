@@ -1,28 +1,24 @@
 /**
- * Page section wrapper. `tone` flips the whole band between the light
- * editorial surface and the near-black surface used for visual rhythm.
+ * Page section wrapper. The brand commits to white, so bands alternate
+ * between canvas and the barely tinted canvas soft. Dark is reserved for
+ * cards and product panels, never a whole marketing band.
  */
 const tones = {
-  light: 'bg-paper text-ink',
-  mist: 'bg-mist text-ink',
-  dark: 'bg-ink text-white',
-  void: 'bg-void text-white',
+  canvas: 'bg-canvas text-ink',
+  soft: 'bg-canvas-soft text-ink',
 }
 
 export default function Section({
   id,
-  tone = 'light',
+  tone = 'canvas',
   className = '',
   containerClassName = '',
   children,
 }) {
   return (
-    <section
-      id={id}
-      className={`relative overflow-hidden ${tones[tone]} ${className}`}
-    >
+    <section id={id} className={`relative ${tones[tone]} ${className}`}>
       <div
-        className={`relative mx-auto w-full max-w-[1240px] px-6 py-20 sm:px-8 sm:py-24 lg:px-12 lg:py-32 ${containerClassName}`}
+        className={`relative mx-auto w-full max-w-[1280px] px-6 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24 ${containerClassName}`}
       >
         {children}
       </div>

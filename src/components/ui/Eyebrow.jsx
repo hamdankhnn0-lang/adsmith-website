@@ -1,19 +1,17 @@
 /**
- * Small uppercase label with a leading rule — used above every section title.
+ * Small label above a section title. On light bands it carries an emerald
+ * dot, which is one of the few places the primary is allowed outside a CTA.
  */
-export default function Eyebrow({ children, tone = 'dark', className = '' }) {
-  const isDark = tone === 'dark'
+export default function Eyebrow({ children, tone = 'light', className = '' }) {
+  const onDark = tone === 'dark'
 
   return (
     <span
-      className={`inline-flex items-center gap-3 text-[0.7rem] font-medium uppercase tracking-[0.22em] ${
-        isDark ? 'text-smoke-500' : 'text-white/55'
+      className={`inline-flex items-center gap-2 caption font-medium ${
+        onDark ? 'text-white/60' : 'text-ink-mute'
       } ${className}`}
     >
-      <span
-        aria-hidden="true"
-        className={`h-px w-8 ${isDark ? 'bg-forge-500' : 'bg-forge-300'}`}
-      />
+      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-primary" />
       {children}
     </span>
   )

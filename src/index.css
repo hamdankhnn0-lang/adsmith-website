@@ -2,64 +2,49 @@
 
 /* ------------------------------------------------------------------
    Adsmith design tokens
-   Black + white lead the palette; blue is used sparingly for CTAs,
-   highlights, icon details and hover states.
+   White canvas, a calibrated grey ladder, near black ink, and a single
+   emerald primary that is the only chromatic event on the page.
 ------------------------------------------------------------------- */
 @theme {
-  --color-ink: #0a0a0a;
-  --color-ink-800: #131316;
-  --color-ink-700: #1c1c20;
-  --color-ink-600: #2a2a30;
+  --color-primary: #3ecf8e;
+  --color-primary-deep: #24b47e;
+  --color-primary-soft: #4ade80;
+  --color-on-primary: #171717;
 
-  --color-paper: #ffffff;
-  --color-mist: #f6f6f4;
-  --color-mist-200: #ecece8;
+  --color-ink: #171717;
+  --color-ink-secondary: #212121;
+  --color-ink-mute: #707070;
+  --color-ink-mute-2: #9a9a9a;
+  --color-ink-faint: #b2b2b2;
+  --color-on-dark: #ffffff;
 
-  --color-smoke-400: #9b9b98;
-  --color-smoke-500: #6f6f6d;
-  --color-smoke-600: #4a4a48;
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #fafafa;
+  --color-canvas-night: #1c1c1c;
+  --color-canvas-night-soft: #202020;
 
-  /* Cool near-black for the services bento — the neutral is biased toward the
-     brand blue so it reads as a chosen ground, not a default black. */
-  --color-void: #07080b;
-  --color-void-raised: #0d0f15;
+  --color-hairline: #dfdfdf;
+  --color-hairline-strong: #c7c7c7;
+  --color-hairline-cool: #ededed;
+  --color-hairline-cool-2: #efefef;
+  --color-hairline-cool-3: #d4d4d4;
 
-  --color-forge-50: #eef2ff;
-  --color-forge-100: #dde5ff;
-  --color-forge-300: #93a9ff;
-  --color-forge-500: #2f5bff;
-  --color-forge-600: #1e42d6;
-  --color-forge-900: #0b1f5c;
+  --font-sans: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
 
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
-  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --shadow-lift: 0 1px 3px rgb(0 0 0 / 0.06);
+  --shadow-float: 0 8px 24px rgb(0 0 0 / 0.08);
+  --shadow-deep: 0 16px 48px rgb(0 0 0 / 0.12);
 
   --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --animate-drift: drift 22s ease-in-out infinite alternate;
   --animate-marquee: marquee 40s linear infinite;
-  --animate-pulse-line: pulse-line 3.2s var(--ease-out-quint) infinite;
-}
-
-@keyframes drift {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  100% {
-    transform: translate3d(4%, -6%, 0) scale(1.12);
-  }
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @keyframes marquee {
@@ -71,13 +56,14 @@
   }
 }
 
-@keyframes pulse-line {
-  0%,
-  100% {
-    opacity: 0.25;
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  50% {
+  to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -92,22 +78,24 @@
   }
 
   body {
-    background-color: var(--color-paper);
+    background-color: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
     font-synthesis-weight: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background-color: var(--color-forge-500);
-    color: #fff;
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-forge-500);
-    outline-offset: 3px;
+    outline: 2px solid var(--color-primary-deep);
+    outline-offset: 2px;
     border-radius: 2px;
   }
 
@@ -126,61 +114,81 @@
   }
 }
 
-@utility display-tight {
-  letter-spacing: -0.035em;
-  line-height: 0.98;
+/* ------------------------------------------------------------------
+   Type tier. Display runs at weight 500 with negative tracking, which
+   is what gives the brand its engineered density. Never go above 500.
+------------------------------------------------------------------- */
+
+@utility display-xxl {
+  font-size: clamp(2.5rem, 5.6vw, 4rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
 }
 
-/* Editorial italic accent used inside headlines. */
-@utility serif-accent {
-  font-family: var(--font-display);
-  font-style: italic;
+@utility display-xl {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+@utility display-lg {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+@utility display-md {
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+@utility heading-lg {
+  font-size: 1.375rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+@utility heading-md {
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+@utility body-lg {
+  font-size: 1.125rem;
   font-weight: 400;
-  letter-spacing: -0.01em;
+  line-height: 1.55;
 }
 
-/* Fine hairline grid used as a background texture on dark sections. */
-@utility hairline-grid {
-  background-image: linear-gradient(to right, rgb(255 255 255 / 0.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(255 255 255 / 0.055) 1px, transparent 1px);
-  background-size: 84px 84px;
+@utility body-md {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
 }
 
-@utility hairline-grid-light {
-  background-image: linear-gradient(to right, rgb(10 10 10 / 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(10 10 10 / 0.05) 1px, transparent 1px);
-  background-size: 84px 84px;
+@utility caption {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.45;
 }
 
-/* A 1px gradient ring drawn with two masks so only the border shows. Sits as
-   an overlay inside a card and fades in on hover. */
-@utility gradient-ring {
-  padding: 1px;
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
+@utility micro {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.45;
 }
 
-/* Pointer-tracked glow. --mx/--my are written by the card's pointermove
-   handler; they fall back to the card centre so it degrades on touch. */
-@utility pointer-glow {
-  background: radial-gradient(
-    22rem circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in oklab, var(--color-forge-500) 16%, transparent),
-    transparent 70%
-  );
-}
-
-/* Subtle film grain so large flat areas never look plasticky. */
-@utility grain {
-  position: relative;
-}
-
-@utility grain-layer {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+@utility code-type {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
 }

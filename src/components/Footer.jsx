@@ -11,28 +11,26 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-ink text-white">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 hairline-grid opacity-50" />
-
-      <div className="relative mx-auto w-full max-w-[1240px] px-6 py-16 sm:px-8 lg:px-12 lg:py-20">
+    <footer className="border-t border-hairline bg-canvas">
+      <div className="mx-auto w-full max-w-[1280px] px-6 py-16 sm:px-8 lg:px-10">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-4">
-            <Wordmark tone="light" />
-            <p className="mt-5 max-w-[30ch] text-[0.92rem] leading-relaxed text-white/45">
+            <Wordmark />
+            <p className="mt-4 max-w-[32ch] caption text-ink-mute">
               {brand.promise} Performance marketing and AI automation for businesses that care how
               they show up.
             </p>
-            <p className="mt-6 text-[0.8rem] text-white/30">{brand.location}</p>
+            <p className="mt-4 caption text-ink-mute-2">{brand.location}</p>
 
-            <ul className="mt-8 flex items-center gap-2.5">
+            <ul className="mt-6 flex items-center gap-2">
               {socials.map(({ label, href, Icon }) => (
                 <li key={label}>
                   <a
                     href={href}
                     aria-label={label}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-white/55 transition-all duration-300 hover:-translate-y-0.5 hover:border-forge-500 hover:text-white"
+                    className="flex h-9 w-9 items-center justify-center rounded-sm border border-hairline text-ink-mute transition-colors duration-200 hover:border-hairline-strong hover:text-ink"
                   >
-                    <Icon className="h-[18px] w-[18px]" />
+                    <Icon className="h-4 w-4" />
                   </a>
                 </li>
               ))}
@@ -41,15 +39,13 @@ export default function Footer() {
 
           {footerColumns.map((column) => (
             <nav key={column.heading} aria-label={column.heading} className="lg:col-span-2">
-              <h2 className="text-[0.7rem] uppercase tracking-[0.2em] text-white/35">
-                {column.heading}
-              </h2>
-              <ul className="mt-5 space-y-3">
+              <h2 className="caption font-medium text-ink">{column.heading}</h2>
+              <ul className="mt-4 space-y-2.5">
                 {column.links.map((link) => (
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="text-[0.9rem] text-white/60 transition-colors duration-300 hover:text-white"
+                      className="caption text-ink-mute transition-colors duration-200 hover:text-ink"
                     >
                       {link.label}
                     </a>
@@ -60,12 +56,12 @@ export default function Footer() {
           ))}
 
           <div className="lg:col-span-2">
-            <h2 className="text-[0.7rem] uppercase tracking-[0.2em] text-white/35">Get in touch</h2>
-            <ul className="mt-5 space-y-3">
+            <h2 className="caption font-medium text-ink">Get in touch</h2>
+            <ul className="mt-4 space-y-2.5">
               <li>
                 <a
                   href={`mailto:${brand.email}`}
-                  className="text-[0.9rem] text-white/60 transition-colors duration-300 hover:text-white"
+                  className="caption text-ink-mute transition-colors duration-200 hover:text-ink"
                 >
                   {brand.email}
                 </a>
@@ -73,7 +69,7 @@ export default function Footer() {
               <li>
                 <a
                   href={`tel:${brand.phone.replace(/[^\d+]/g, '')}`}
-                  className="text-[0.9rem] text-white/60 transition-colors duration-300 hover:text-white"
+                  className="caption text-ink-mute transition-colors duration-200 hover:text-ink"
                 >
                   {brand.phone}
                 </a>
@@ -81,7 +77,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#contact"
-                  className="text-[0.9rem] text-forge-300 transition-colors duration-300 hover:text-white"
+                  className="caption font-medium text-ink underline underline-offset-4"
                 >
                   Book a call
                 </a>
@@ -90,20 +86,18 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[0.8rem] text-white/30">
+        <div className="mt-14 flex flex-col gap-3 border-t border-hairline-cool pt-7 sm:flex-row sm:items-center sm:justify-between">
+          <p className="caption text-ink-mute-2">
             © {new Date().getFullYear()} {brand.name}. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <a href="#" className="text-[0.8rem] text-white/30 transition-colors hover:text-white/70">
+            <a href="#" className="caption text-ink-mute-2 transition-colors hover:text-ink">
               Privacy
             </a>
-            <a href="#" className="text-[0.8rem] text-white/30 transition-colors hover:text-white/70">
+            <a href="#" className="caption text-ink-mute-2 transition-colors hover:text-ink">
               Terms
             </a>
-            <span className="text-[0.8rem] uppercase tracking-[0.16em] text-white/25">
-              {brand.tagline}
-            </span>
+            <span className="caption text-ink-mute-2">{brand.tagline}</span>
           </div>
         </div>
       </div>

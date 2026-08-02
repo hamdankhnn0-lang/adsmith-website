@@ -19,22 +19,37 @@ Pages or any static host with no extra configuration.
 
 ## Design system
 
+The site commits to white. A calibrated grey ladder does the structural work and a single
+emerald primary is the only chromatic event on the page.
+
 | Token | Value | Used for |
 | --- | --- | --- |
-| `ink` | `#0A0A0A` | Dark sections, body text, primary surfaces |
-| `paper` / `mist` | `#FFFFFF` / `#F6F6F4` | Light and off-white editorial bands |
-| `forge-500` | `#2F5BFF` | CTAs, hover states, icon accents, highlights |
-| `forge-300` | `#93A9FF` | Accent type on dark backgrounds |
-| `forge-900` | `#0B1F5C` | Deep navy in gradient washes |
+| `primary` | `#3ecf8e` | Filled CTAs, wordmark accent, dot indicators |
+| `primary-deep` | `#24b47e` | Pressed state of the primary |
+| `on-primary` | `#171717` | Type on the emerald fill. Near black, never white |
+| `ink` | `#171717` | Body text and headings. Near black, never pure black |
+| `ink-mute` / `ink-mute-2` / `ink-faint` | `#707070` / `#9a9a9a` / `#b2b2b2` | Secondary, tertiary and placeholder text |
+| `canvas` / `canvas-soft` | `#ffffff` / `#fafafa` | Page ground and alternating bands |
+| `canvas-night` | `#1c1c1c` | Code blocks, product panes, featured cards only |
+| `hairline` / `hairline-strong` / `hairline-cool` | `#dfdfdf` / `#c7c7c7` / `#ededed` | 1px chrome on cards, tables and dividers |
 
-Black and white carry the layout; blue is deliberately rationed to CTAs, hover states,
-one detail per icon and the italic accent word in each headline.
+**Rules worth keeping.** Emerald is scarce: roughly one filled green button per viewport,
+never a whole surface. Dark is a card treatment, never a full marketing band. Buttons use
+the 6px radius, cards 12px; pill shapes are for tags only. No atmospheric gradients on
+section grounds. Product panels, not illustrations or photography, carry the visual weight.
 
-**Type** — Inter for everything structural, Instrument Serif (italic) for the accent word
-inside headlines. Both load from Google Fonts in `index.html` with system fallbacks.
+**Type** — Inter at weight 500 for the display tier with negative tracking that scales from
+about `-0.03em` at hero size down to `-0.015em`, and weight 400 for body. Never above 500,
+which is where the calibrated mid weight breaks. Code uses the system mono stack.
 
-All tokens live in the `@theme` block at the top of `src/index.css`, so re-skinning the
-site is a matter of editing that one block.
+Type tiers are utilities (`display-xxl`, `display-xl`, `display-lg`, `display-md`,
+`heading-lg`, `heading-md`, `body-lg`, `body-md`, `caption`, `micro`, `code-type`) defined
+alongside the tokens in the `@theme` block at the top of `src/index.css`, so re-skinning the
+site means editing that one file.
+
+**Copy style** — the site is written without hyphens or dashes of any kind. Compounds are
+either spaced or reworded, and sentences break rather than lean on an em dash. Worth
+preserving when adding copy.
 
 ## Structure
 
@@ -44,15 +59,15 @@ src/
   index.css               design tokens, keyframes, base styles, custom utilities
   data/site.js            every piece of copy: nav, services, industries, FAQs, footer
   components/
-    Navbar.jsx            sticky bar; inverts to white type over the hero
-    Hero.jsx              headline, CTAs, drifting gradient backdrop, stat row
+    Navbar.jsx            sticky bar with the emerald CTA
+    Hero.jsx              headline, CTAs, composited product panes, stat row
     LogoMarquee.jsx       placeholder client wordmarks
-    Services.jsx          the 7 services; n8n card spans a full row
+    Services.jsx          the 7 services as a bento grid; n8n tile is the dark card
     Industries.jsx        6 client types as an accessible tab list + detail panel
     WhyAdsmith.jsx        4 value pillars
     Process.jsx           4-step timeline (horizontal on desktop, vertical on mobile)
     Testimonials.jsx      placeholder quotes + proof stats
-    AutomationSpotlight.jsx  n8n / AI workflow section with an abstract flow diagram
+    AutomationSpotlight.jsx  n8n and AI workflow section with a dark workflow pane
     Faq.jsx               3-item accordion
     Contact.jsx           contact form + scheduler placeholder
     Footer.jsx            wordmark, nav columns, socials
@@ -62,7 +77,7 @@ src/
 ### Editing copy
 
 Almost all text lives in `src/data/site.js`. Adding a service is a new entry in
-`services` plus an icon in `ui/Icons.jsx`; adding an industry is a new entry in
+`services` plus a Lucide icon in the `icons` map in `Services.jsx`; adding an industry is a new entry in
 `industries` — both sections render from the array.
 
 ## Going live
@@ -135,7 +150,7 @@ those submissions are dropped silently without reaching your endpoint.
 ## Accessibility and motion
 
 - Scroll reveals use `IntersectionObserver` and are disabled under
-  `prefers-reduced-motion: reduce`, along with the drifting gradients and marquee.
+  `prefers-reduced-motion: reduce`, along with the logo marquee.
 - The industries tab list supports arrow-key navigation and full ARIA tab semantics.
 - The mobile menu locks background scroll, closes on `Escape`, and its links leave the tab
   order when closed.

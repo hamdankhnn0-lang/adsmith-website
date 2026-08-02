@@ -2,83 +2,142 @@ import Button from './ui/Button.jsx'
 import Reveal from './ui/Reveal.jsx'
 import { heroStats } from '../data/site.js'
 
-/** Slow-drifting gradient orbs + hairline grid. No imagery, no stock photos. */
-function HeroBackdrop() {
+const rows = [
+  { channel: 'Meta Ads', spend: '£12,480', roas: '5.1x', booked: '412' },
+  { channel: 'Google Search', spend: '£8,240', roas: '4.4x', booked: '298' },
+  { channel: 'Performance Max', spend: '£5,100', roas: '3.9x', booked: '176' },
+  { channel: 'TikTok Ads', spend: '£3,860', roas: '4.8x', booked: '151' },
+]
+
+const logLines = [
+  { t: '09:41:02', m: 'lead.received  →  qualify_agent' },
+  { t: '09:41:03', m: 'agent.score    →  hot (0.91)' },
+  { t: '09:41:04', m: 'whatsapp.send  →  delivered' },
+]
+
+/**
+ * The product is the argument. A light reporting panel with a dark automation
+ * log composited over it, in place of any atmospheric backdrop.
+ */
+function ProductPanes() {
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 bg-ink" />
+    <div className="relative">
+      <div className="overflow-hidden rounded-lg border border-hairline bg-canvas shadow-float">
+        <div className="flex items-center justify-between border-b border-hairline-cool px-5 py-3.5">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-primary" />
+            <span className="caption font-medium text-ink">Campaign performance</span>
+          </div>
+          <span className="micro text-ink-mute-2">Last 30 days</span>
+        </div>
 
-      <div className="absolute inset-0 hairline-grid opacity-70" />
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[30rem] border-collapse">
+            <thead>
+              <tr className="border-b border-hairline-cool">
+                {['Channel', 'Spend', 'ROAS', 'Booked'].map((h, i) => (
+                  <th
+                    key={h}
+                    scope="col"
+                    className={`micro font-medium uppercase tracking-[0.06em] text-ink-mute-2 ${
+                      i === 0 ? 'px-5 py-2.5 text-left' : 'px-5 py-2.5 text-right'
+                    }`}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.channel} className="border-b border-hairline-cool last:border-0">
+                  <td className="px-5 py-3 caption text-ink">{r.channel}</td>
+                  <td className="px-5 py-3 caption text-right tabular-nums text-ink-mute">
+                    {r.spend}
+                  </td>
+                  <td className="px-5 py-3 caption text-right tabular-nums text-ink">{r.roas}</td>
+                  <td className="px-5 py-3 caption text-right tabular-nums text-ink-mute">
+                    {r.booked}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-      <div className="absolute -left-[16%] top-[-24%] h-[48rem] w-[48rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(47,91,255,0.55),transparent_62%)] blur-[10px] animate-drift" />
-      <div
-        className="absolute -right-[10%] top-[2%] h-[42rem] w-[42rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(30,66,214,0.42),transparent_64%)] blur-[16px] animate-drift"
-        style={{ animationDelay: '-9s', animationDuration: '28s' }}
-      />
-      <div
-        className="absolute bottom-[-32%] left-[28%] h-[38rem] w-[38rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(147,169,255,0.28),transparent_60%)] blur-[20px] animate-drift"
-        style={{ animationDelay: '-15s', animationDuration: '34s' }}
-      />
+        <div className="flex items-center justify-between bg-canvas-soft px-5 py-3">
+          <span className="micro text-ink-mute">Blended ROAS</span>
+          <span className="caption font-medium tabular-nums text-ink">4.7x</span>
+        </div>
+      </div>
 
-      {/* Sharpen the type by darkening the centre of the canvas. */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_48%,rgba(10,10,10,0.42),rgba(10,10,10,0.86)_74%)]" />
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-ink" />
-      <div className="absolute inset-0 grain-layer opacity-[0.16] mix-blend-overlay" />
+      {/* Floating dark pane, the second layer of the composite. It clips the
+          bottom left corner rather than covering any table rows. */}
+      <div className="mt-4 overflow-hidden rounded-lg bg-canvas-night shadow-float sm:absolute sm:-bottom-24 sm:-left-8 sm:mt-0 sm:w-[18rem] lg:-left-12">
+        <div className="flex items-center gap-2 border-b border-white/10 px-4 py-2.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+          <span className="micro text-white/70">n8n · lead intake</span>
+        </div>
+        <div className="px-4 py-3">
+          {logLines.map((l) => (
+            <div key={l.t} className="flex gap-3 code-type text-[0.72rem] leading-6">
+              <span className="shrink-0 tabular-nums text-white/35">{l.t}</span>
+              <span className="truncate text-white/80">{l.m}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
 
 export default function Hero() {
   return (
-    <section id="top" className="relative isolate flex min-h-[100svh] flex-col justify-center overflow-hidden bg-ink text-white">
-      <HeroBackdrop />
+    <section id="top" className="relative bg-canvas">
+      <div className="mx-auto w-full max-w-[1280px] px-6 pb-24 pt-28 sm:px-8 sm:pb-28 sm:pt-32 lg:px-10 lg:pb-36 lg:pt-36">
+        <div className="grid items-center gap-14 lg:grid-cols-12 lg:gap-16">
+          <div className="min-w-0 lg:col-span-6">
+            <Reveal>
+              <span className="inline-flex items-center gap-2 rounded-full bg-canvas-soft px-2.5 py-1 micro text-ink">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                Forged for Growth
+              </span>
+            </Reveal>
 
-      <div className="relative mx-auto w-full max-w-[1240px] px-6 pb-16 pt-32 sm:px-8 sm:pt-36 lg:px-12 lg:pb-24 lg:pt-40">
-        <Reveal delay={40}>
-          <span className="inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/5 px-3.5 py-1.5 text-[0.7rem] font-medium uppercase tracking-[0.2em] text-white/70 backdrop-blur-sm">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-forge-300 opacity-70" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-forge-500" />
-            </span>
-            Forged for Growth
-          </span>
-        </Reveal>
+            <Reveal delay={60} as="h1" className="mt-6 display-xxl text-ink">
+              Precision marketing, masterfully built.
+            </Reveal>
 
-        <Reveal delay={120} as="h1" className="mt-8 max-w-[19ch] display-tight text-[clamp(2.8rem,8.2vw,6.6rem)] font-semibold">
-          Precision marketing,{' '}
-          <span className="serif-accent text-forge-300">masterfully</span> built.
-        </Reveal>
+            <Reveal delay={120} as="p" className="mt-6 max-w-[46ch] body-lg text-ink-mute">
+              Adsmith builds advertising and automation systems for restaurants, hotels, local
+              brands and premium SMEs. Engineered like craft, measured like finance.
+            </Reveal>
 
-        <Reveal
-          delay={220}
-          as="p"
-          className="mt-7 max-w-[54ch] text-[1.05rem] leading-relaxed text-white/62 sm:text-[1.15rem]"
-        >
-          Adsmith builds high-performance advertising and automation systems for restaurants,
-          hotels, local brands and premium SMEs — engineered like craft, measured like finance.
-        </Reveal>
+            <Reveal delay={180} className="mt-8 flex flex-wrap items-center gap-3">
+              <Button href="#contact" size="lg">
+                Book a call
+              </Button>
+              <Button href="#contact" size="lg" variant="outline">
+                Get a free audit
+              </Button>
+            </Reveal>
+          </div>
 
-        <Reveal delay={300} className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button href="#contact" size="lg" withArrow>
-            Book a call
-          </Button>
-          <Button href="#contact" size="lg" variant="outlineLight">
-            Get a free audit
-          </Button>
-        </Reveal>
+          {/* min-w-0 stops the 30rem table forcing the grid track wider than
+              the viewport; the table scrolls inside its own container. */}
+          <Reveal delay={160} className="min-w-0 lg:col-span-6">
+            <ProductPanes />
+          </Reveal>
+        </div>
 
-        <Reveal delay={420} className="mt-16 lg:mt-24">
-          <dl className="grid grid-cols-2 gap-x-6 gap-y-8 border-t border-white/10 pt-8 sm:gap-x-10 lg:grid-cols-4">
+        <Reveal delay={240} className="mt-20 lg:mt-28">
+          <dl className="grid grid-cols-2 gap-x-8 gap-y-8 border-t border-hairline-cool pt-8 lg:grid-cols-4">
             {heroStats.map((stat) => (
               <div key={stat.label}>
                 <dt className="sr-only">{stat.label}</dt>
                 <dd>
-                  <span className="block text-[2rem] font-semibold tracking-[-0.04em] text-white sm:text-[2.4rem]">
-                    {stat.value}
-                  </span>
-                  <span className="mt-1.5 block text-[0.78rem] uppercase tracking-[0.14em] text-white/40">
-                    {stat.label}
-                  </span>
+                  <span className="block display-md tabular-nums text-ink">{stat.value}</span>
+                  <span className="mt-1 block caption text-ink-mute">{stat.label}</span>
                 </dd>
               </div>
             ))}

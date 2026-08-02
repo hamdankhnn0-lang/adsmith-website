@@ -5,57 +5,26 @@ import { pillars } from '../data/site.js'
 
 export default function WhyAdsmith() {
   return (
-    <Section id="why" tone="dark">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 hairline-grid opacity-70" />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-40 top-1/3 h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(47,91,255,0.16),transparent_65%)]"
-      />
-
-      <div className="relative grid gap-8 lg:grid-cols-12 lg:gap-12">
-        <div className="lg:col-span-6">
-          <Reveal>
-            <Eyebrow tone="light">Why Adsmith</Eyebrow>
-          </Reveal>
-          <Reveal
-            delay={80}
-            as="h2"
-            className="mt-6 display-tight text-[clamp(2.2rem,5vw,3.6rem)] font-semibold"
-          >
-            The difference is in the{' '}
-            <span className="serif-accent text-forge-300">craft</span>.
-          </Reveal>
+    <Section id="why" tone="canvas">
+      <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
+        <div className="lg:col-span-7">
+          <Eyebrow>Why Adsmith</Eyebrow>
+          <h2 className="mt-4 display-xl text-ink">The difference is in the craft.</h2>
         </div>
-        <Reveal
-          delay={140}
-          as="p"
-          className="max-w-[44ch] self-end text-[1rem] leading-relaxed text-white/55 lg:col-span-5 lg:col-start-8"
-        >
+        <p className="max-w-[44ch] self-end body-lg text-ink-mute lg:col-span-5">
           Anyone can run ads. Very few build the measurement, creative and operational plumbing
           that lets those ads compound month after month. That gap is the whole business.
-        </Reveal>
+        </p>
       </div>
 
-      <div className="relative mt-14 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 sm:grid-cols-2 lg:mt-20">
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
         {pillars.map((pillar, i) => (
-          <Reveal key={pillar.number} delay={i * 80} className="h-full">
-            <div className="group relative flex h-full flex-col bg-ink p-8 transition-colors duration-500 hover:bg-ink-800 sm:p-10">
-              <span className="text-[0.72rem] tracking-[0.22em] text-forge-300">
-                {pillar.number}
-              </span>
-
-              <h3 className="mt-6 text-[1.6rem] font-semibold tracking-[-0.035em] sm:text-[1.8rem]">
-                {pillar.title}
-              </h3>
-
-              <span
-                aria-hidden="true"
-                className="mt-5 block h-px w-10 bg-white/20 transition-all duration-500 ease-out-quint group-hover:w-20 group-hover:bg-forge-500"
-              />
-
-              <p className="mt-5 max-w-[42ch] text-[0.96rem] leading-relaxed text-white/55">
-                {pillar.body}
-              </p>
+          <Reveal key={pillar.number} delay={i * 70} className="h-full">
+            <div className="flex h-full flex-col rounded-lg border border-hairline bg-canvas p-8 transition-[border-color,box-shadow] duration-200 hover:border-hairline-strong hover:shadow-lift">
+              <span className="caption tabular-nums text-ink-mute-2">{pillar.number}</span>
+              <h3 className="mt-5 heading-lg text-ink">{pillar.title}</h3>
+              <span aria-hidden="true" className="mt-4 block h-px w-8 bg-primary" />
+              <p className="mt-4 body-md text-ink-mute">{pillar.body}</p>
             </div>
           </Reveal>
         ))}

@@ -8,8 +8,8 @@ export const brand = {
   tagline: 'Forged for Growth',
   promise: 'Precision marketing, masterfully built.',
   email: 'hello@adsmith.agency',
-  phone: '+1 (555) 014-2280',
-  location: 'Remote-first · Serving clients across 9 time zones',
+  phone: '+1 (555) 014 2280',
+  location: 'Working remotely with clients across 9 time zones',
 }
 
 export const navLinks = [
@@ -38,7 +38,7 @@ export const services = [
     icon: 'workflow',
     name: 'n8n & AI Automation',
     summary:
-      'Custom n8n workflows and AI agents that handle the follow-up, reporting and admin your team no longer should.',
+      'Custom n8n workflows and AI agents that handle the follow up, the reporting and the admin your team no longer should.',
     chips: ['n8n Workflows', 'AI Agents', 'CRM Sync', 'Reporting'],
     size: 'lg',
     featured: true,
@@ -64,7 +64,7 @@ export const services = [
     icon: 'video',
     name: 'TikTok Ads',
     summary:
-      'Native, scroll-stopping creative paired with disciplined media buying.',
+      'Native creative that stops the scroll, paired with disciplined media buying.',
     chips: ['UGC', 'Spark Ads', 'Hook Testing', 'Creators'],
   },
   {
@@ -80,7 +80,7 @@ export const services = [
     icon: 'pin',
     name: 'Google Business Profile',
     summary:
-      'Local visibility done properly — listings, reviews and map-pack rankings.',
+      'Local visibility done properly, from listings and reviews to map pack rankings.',
     chips: ['Listings', 'Reviews', 'Local SEO', 'Maps'],
   },
   {
@@ -98,44 +98,44 @@ export const industries = [
   {
     id: 'restaurants',
     name: 'Restaurants',
-    line: 'Fill quiet covers, launch new menus and turn first-time diners into regulars.',
-    metric: '+38% weekday covers',
+    line: 'Fill quiet covers, launch new menus and turn first time diners into regulars.',
+    metric: '38% more weekday covers',
     points: ['Reservation campaigns', 'Menu launch creative', 'Review engine'],
   },
   {
     id: 'cafes',
     name: 'Cafés',
     line: 'Own your neighbourhood on Maps and build a loyal morning rush that shows up daily.',
-    metric: '2.4x map-pack views',
+    metric: '2.4x map pack views',
     points: ['Local search dominance', 'Loyalty automations', 'Daily content'],
   },
   {
     id: 'hotels',
     name: 'Hotels',
-    line: 'Drive direct bookings and reduce OTA dependency with brand-led demand capture.',
-    metric: '−31% OTA reliance',
+    line: 'Drive direct bookings and reduce OTA dependency with demand capture led by your brand.',
+    metric: '31% less OTA reliance',
     points: ['Direct booking funnels', 'Seasonal offers', 'Concierge AI replies'],
   },
   {
     id: 'local',
     name: 'Local Businesses',
-    line: 'Show up first in your area, then convert calls and walk-ins without lifting a finger.',
+    line: 'Show up first in your area, then convert the calls and visits without lifting a finger.',
     metric: '3.1x qualified calls',
-    points: ['Geo-targeted ads', 'Call tracking', 'GMB management'],
+    points: ['Targeted local ads', 'Call tracking', 'Profile management'],
   },
   {
     id: 'service',
     name: 'Service Businesses',
     line: 'A predictable pipeline of booked appointments, qualified and followed up automatically.',
-    metric: '−54% lead response time',
-    points: ['Lead-gen campaigns', 'Instant speed-to-lead', 'CRM automation'],
+    metric: '54% faster lead response',
+    points: ['Lead campaigns', 'Instant speed to lead', 'CRM automation'],
   },
   {
     id: 'sme',
     name: 'Premium SMEs',
-    line: 'Enterprise-grade marketing systems, sized and priced for a lean, ambitious team.',
+    line: 'Enterprise grade marketing systems, sized and priced for a lean, ambitious team.',
     metric: '6 hrs saved weekly',
-    points: ['Full-funnel strategy', 'Reporting dashboards', 'Ops automation'],
+    points: ['Full funnel strategy', 'Reporting dashboards', 'Ops automation'],
   },
 ]
 
@@ -143,12 +143,12 @@ export const pillars = [
   {
     number: '01',
     title: 'Precision',
-    body: 'Every campaign starts with clean measurement. No vanity metrics, no guesswork — decisions are made against contribution margin and cost per booked outcome.',
+    body: 'Every campaign starts with clean measurement. No vanity metrics and no guesswork. Decisions are made against contribution margin and cost per booked outcome.',
   },
   {
     number: '02',
-    title: 'Automation-First',
-    body: 'If a task repeats, we automate it. n8n workflows and AI agents remove the manual drag from lead handling, reporting and follow-up before it ever reaches your team.',
+    title: 'Automation first',
+    body: 'If a task repeats, we automate it. n8n workflows and AI agents remove the manual drag from lead handling, reporting and follow up before it ever reaches your team.',
   },
   {
     number: '03',
@@ -158,28 +158,28 @@ export const pillars = [
   {
     number: '04',
     title: 'Proven Systems',
-    body: 'We do not reinvent the wheel per client. Battle-tested account structures and creative frameworks get deployed on day one, then tuned to your market.',
+    body: 'We do not reinvent the wheel per client. Account structures and creative frameworks that have already been proven get deployed on day one, then tuned to your market.',
   },
 ]
 
 export const processSteps = [
   {
     step: '01',
-    title: 'Audit & Blueprint',
-    body: 'We pull apart your existing accounts, tracking, funnel and competitors, then hand you a written growth blueprint — yours whether we work together or not.',
+    title: 'Audit and Blueprint',
+    body: 'We pull apart your existing accounts, tracking, funnel and competitors, then hand you a written growth blueprint. It is yours whether we work together or not.',
     duration: 'Week 1',
   },
   {
     step: '02',
     title: 'Forge',
     body: 'Tracking is rebuilt, account structures are laid out, creative goes into production and the first automations are wired into your CRM.',
-    duration: 'Weeks 2–3',
+    duration: 'Weeks 2 to 3',
   },
   {
     step: '03',
-    title: 'Launch & Learn',
+    title: 'Launch and Learn',
     body: 'Campaigns go live with a structured testing roadmap. Weekly reviews focus on the two or three levers that actually move the number.',
-    duration: 'Weeks 4–6',
+    duration: 'Weeks 4 to 6',
   },
   {
     step: '04',
@@ -226,7 +226,7 @@ export const clientLogos = [
 
 export const automationCapabilities = [
   {
-    title: 'Speed-to-lead agents',
+    title: 'Speed to lead agents',
     body: 'Every enquiry answered in under 60 seconds, qualified by AI and routed to the right person with full context attached.',
   },
   {
@@ -234,8 +234,8 @@ export const automationCapabilities = [
     body: 'Ad platforms, CRM and POS data stitched into one weekly report that lands in your inbox before Monday standup.',
   },
   {
-    title: 'Review & reputation loops',
-    body: 'Post-visit sequences that ask happy customers for reviews and quietly route unhappy ones to your team first.',
+    title: 'Review and reputation loops',
+    body: 'Follow up sequences that ask happy customers for reviews and quietly route unhappy ones to your team first.',
   },
   {
     title: 'Content operations',
@@ -253,7 +253,7 @@ export const automationFlow = [
 export const faqs = [
   {
     q: 'What does a typical engagement look like?',
-    a: 'Most clients start with a paid growth blueprint, then move onto a monthly retainer covering media buying, creative and automation. Minimum initial term is three months — long enough to prove the system works.',
+    a: 'Most clients start with a paid growth blueprint, then move onto a monthly retainer covering media buying, creative and automation. The minimum initial term is three months, which is long enough to prove the system works.',
   },
   {
     q: 'Do you work with businesses outside your listed industries?',
@@ -261,7 +261,7 @@ export const faqs = [
   },
   {
     q: 'Who owns the accounts and automations?',
-    a: 'You do — always. Ad accounts, pixels, n8n instances and documentation are yours, set up under your ownership from day one.',
+    a: 'You do, always. Ad accounts, pixels, n8n instances and documentation are yours, set up under your ownership from day one.',
   },
 ]
 

@@ -4,51 +4,40 @@ import Reveal from './ui/Reveal.jsx'
 import Button from './ui/Button.jsx'
 import { automationCapabilities, automationFlow } from '../data/site.js'
 
-/** Abstract node/edge diagram standing in for an n8n canvas. */
-function FlowDiagram() {
+/** A workflow pane rendered as product chrome rather than an illustration. */
+function WorkflowPane() {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-ink-800/80 p-6 backdrop-blur-sm sm:p-8">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 hairline-grid opacity-80" />
-
-      <div className="relative flex items-center justify-between">
-        <span className="text-[0.68rem] uppercase tracking-[0.2em] text-white/40">
-          workflow · lead-intake
-        </span>
-        <span className="flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.2em] text-forge-300">
-          <span className="h-1.5 w-1.5 rounded-full bg-forge-500 animate-pulse-line" />
-          live
+    <div className="overflow-hidden rounded-lg bg-canvas-night shadow-float">
+      <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
+        <span className="code-type text-[0.78rem] text-white/60">workflow / lead intake</span>
+        <span className="inline-flex items-center gap-1.5 micro text-white/60">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+          Live
         </span>
       </div>
 
-      <ol className="relative mt-8 space-y-3">
+      <ol className="p-5">
         {automationFlow.map((node, i) => (
-          <li key={node.label} className="relative">
-            <div className="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-4 transition-colors duration-500 hover:border-forge-500/40 hover:bg-white/[0.07]">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/12 bg-ink text-[0.7rem] font-medium text-forge-300">
+          <li key={node.label}>
+            <div className="flex items-center gap-3 rounded-sm bg-canvas-night-soft px-4 py-3">
+              <span className="code-type shrink-0 text-[0.78rem] tabular-nums text-white/35">
                 {String(i + 1).padStart(2, '0')}
               </span>
               <span className="min-w-0">
-                <span className="block text-[0.95rem] font-medium tracking-tight text-white">
-                  {node.label}
-                </span>
-                <span className="block truncate text-[0.82rem] text-white/45">{node.caption}</span>
+                <span className="block caption font-medium text-on-dark">{node.label}</span>
+                <span className="block micro text-white/45">{node.caption}</span>
               </span>
             </div>
-
             {i < automationFlow.length - 1 && (
-              <span
-                aria-hidden="true"
-                className="ml-[34px] flex h-3 w-px bg-gradient-to-b from-forge-500/70 to-white/10"
-                style={{ animationDelay: `${i * 0.4}s` }}
-              />
+              <span aria-hidden="true" className="ml-8 block h-2.5 w-px bg-white/15" />
             )}
           </li>
         ))}
       </ol>
 
-      <div className="relative mt-8 flex items-center justify-between border-t border-white/10 pt-5">
-        <span className="text-[0.72rem] text-white/40">Avg. run time</span>
-        <span className="text-[0.72rem] font-medium text-white">1.8s · 0 manual steps</span>
+      <div className="flex items-center justify-between border-t border-white/10 px-5 py-3">
+        <span className="micro text-white/45">Average run time</span>
+        <span className="caption tabular-nums text-on-dark">1.8s · 0 manual steps</span>
       </div>
     </div>
   )
@@ -56,56 +45,41 @@ function FlowDiagram() {
 
 export default function AutomationSpotlight() {
   return (
-    <Section id="automation" tone="dark">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-[-20%] top-[-10%] h-[40rem] w-[40rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(47,91,255,0.22),transparent_62%)] animate-drift"
-      />
-
-      <div className="relative grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
+    <Section id="automation" tone="soft">
+      <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-6">
-          <Reveal>
-            <Eyebrow tone="light">n8n &amp; AI automation</Eyebrow>
-          </Reveal>
+          <Eyebrow>n8n and AI automation</Eyebrow>
 
-          <Reveal
-            delay={80}
-            as="h2"
-            className="mt-6 display-tight text-[clamp(2.2rem,5vw,3.7rem)] font-semibold"
-          >
-            The agency that also{' '}
-            <span className="serif-accent text-forge-300">automates</span> the business behind
-            the ads.
-          </Reveal>
+          <h2 className="mt-4 display-xl text-ink">
+            The agency that also automates the business behind the ads.
+          </h2>
 
-          <Reveal delay={140} as="p" className="mt-6 max-w-[52ch] text-[1.05rem] leading-relaxed text-white/60">
+          <p className="mt-5 max-w-[50ch] body-lg text-ink-mute">
             Most agencies hand you leads and walk away. We build the n8n workflows and AI agents
-            that catch those leads, qualify them, follow up, update your CRM and report back —
-            running quietly in the background, every hour of every day.
-          </Reveal>
+            that catch those leads, qualify them, follow up, update your CRM and report back. All
+            of it running quietly in the background, every hour of every day.
+          </p>
 
-          <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 sm:grid-cols-2">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {automationCapabilities.map((cap, i) => (
-              <Reveal key={cap.title} delay={180 + i * 70} className="h-full">
-                <div className="h-full bg-ink p-6 transition-colors duration-500 hover:bg-ink-800">
-                  <h3 className="text-[1rem] font-semibold tracking-tight text-white">
-                    {cap.title}
-                  </h3>
-                  <p className="mt-2.5 text-[0.9rem] leading-relaxed text-white/50">{cap.body}</p>
+              <Reveal key={cap.title} delay={i * 60} className="h-full">
+                <div className="h-full rounded-lg border border-hairline bg-canvas p-6">
+                  <h3 className="heading-md text-ink">{cap.title}</h3>
+                  <p className="mt-2 body-md text-ink-mute">{cap.body}</p>
                 </div>
               </Reveal>
             ))}
           </div>
 
-          <Reveal delay={420} className="mt-10">
-            <Button href="#contact" variant="light" size="lg" withArrow>
+          <div className="mt-10">
+            <Button href="#contact" size="lg">
               Map my automations
             </Button>
-          </Reveal>
+          </div>
         </div>
 
-        <Reveal delay={200} className="lg:col-span-5 lg:col-start-8">
-          <FlowDiagram />
+        <Reveal delay={120} className="lg:col-span-6">
+          <WorkflowPane />
         </Reveal>
       </div>
     </Section>
