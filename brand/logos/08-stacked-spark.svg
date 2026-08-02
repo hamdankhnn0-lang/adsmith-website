@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 180" fill="none">
+  <g transform="translate(68,14)">
+    <polygon points="32,6 39,30 32,32" fill="#111111"/>
+    <polygon points="58,32 32,34 32,32" fill="#111111"/>
+    <polygon points="32,58 26,32 32,32" fill="#111111"/>
+    <polygon points="6,32 32,30 32,32" fill="#2563EB"/>
+  </g>
+  <text x="100" y="150" text-anchor="middle" font-family="'Plus Jakarta Sans','Inter',-apple-system,'Segoe UI',sans-serif" font-size="30" font-weight="800" letter-spacing="-0.6" fill="#111111">Adsmith</text>
+</svg>
