@@ -1,27 +1,44 @@
 /**
- * Page section wrapper. The brand commits to white, so bands alternate
- * between canvas and the barely tinted canvas soft. Dark is reserved for
- * cards and product panels, never a whole marketing band.
+ * Page section wrapper. Bands alternate between the base ground and a very
+ * slightly lifted one so the page has rhythm without hard colour switches.
  */
 const tones = {
-  canvas: 'bg-canvas text-ink',
-  soft: 'bg-canvas-soft text-ink',
+  ground: 'bg-ground',
+  raised: 'bg-ground-2',
 }
 
 export default function Section({
   id,
-  tone = 'canvas',
+  tone = 'ground',
   className = '',
   containerClassName = '',
   children,
 }) {
   return (
-    <section id={id} className={`relative ${tones[tone]} ${className}`}>
+    <section
+      id={id}
+      className={`relative isolate overflow-hidden ${tones[tone]} ${className}`}
+    >
       <div
-        className={`relative mx-auto w-full max-w-[1280px] px-6 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24 ${containerClassName}`}
+        className={`relative mx-auto w-full max-w-[1200px] px-5 py-20 sm:px-8 sm:py-24 lg:px-10 lg:py-32 ${containerClassName}`}
       >
         {children}
       </div>
     </section>
+  )
+}
+
+/** Soft radial wash used behind sections that need a little depth. */
+export function Glow({ className = '', tone = 'jade' }) {
+  const paint =
+    tone === 'sand'
+      ? 'bg-[radial-gradient(circle_at_center,rgba(234,221,198,0.10),transparent_68%)]'
+      : 'bg-[radial-gradient(circle_at_center,rgba(47,207,150,0.14),transparent_68%)]'
+
+  return (
+    <div
+      aria-hidden="true"
+      className={`pointer-events-none absolute -z-10 rounded-full blur-3xl ${paint} ${className}`}
+    />
   )
 }

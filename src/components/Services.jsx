@@ -1,20 +1,20 @@
-import { motion, useReducedMotion } from 'framer-motion'
 import {
-  ArrowRight,
+  ArrowUpRight,
   LayoutTemplate,
   MapPin,
+  MessageCircle,
   MessagesSquare,
   Search,
   Share2,
   Video,
-  Workflow,
 } from 'lucide-react'
-import Section from './ui/Section.jsx'
+import Section, { Glow } from './ui/Section.jsx'
 import Eyebrow from './ui/Eyebrow.jsx'
-import { services } from '../data/site.js'
+import Reveal from './ui/Reveal.jsx'
+import { services, whatsappThread } from '../data/site.js'
 
 const icons = {
-  workflow: Workflow,
+  whatsapp: MessageCircle,
   meta: Share2,
   search: Search,
   video: Video,
@@ -30,175 +30,162 @@ const spans = {
   wide: 'lg:col-span-3',
 }
 
-const EASE = [0.22, 1, 0.36, 1]
-
-const gridVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
-}
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
-}
-
-const flowSteps = [
-  'trigger  new_lead',
-  'agent    qualify',
-  'crm      upsert',
-  'notify   whatsapp',
-]
-
-function Chip({ children, onDark }) {
+function Chip({ children }) {
   return (
-    <li
-      className={`rounded-full px-2 py-0.5 micro ${
-        onDark ? 'bg-white/10 text-white/75' : 'bg-canvas-soft text-ink'
-      }`}
-    >
+    <li className="rounded-full border border-white/8 bg-white/[0.03] px-2.5 py-1 caption text-text-mute transition-colors duration-300 group-hover:border-white/14 group-hover:text-text">
       {children}
     </li>
   )
 }
 
-function LearnMore({ label, onDark }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 text-[0.875rem] font-medium leading-none ${
-        onDark ? 'text-white' : 'text-ink'
-      }`}
-    >
-      {label}
-      <ArrowRight
-        aria-hidden="true"
-        className="h-3.5 w-3.5 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
-      />
-    </span>
-  )
-}
-
-function ServiceCard({ service }) {
+function ServiceCard({ service, index }) {
   const Icon = icons[service.icon]
   const isHero = service.size === 'lg'
   const isWide = service.size === 'wide'
-  const onDark = Boolean(service.featured)
 
   const iconWell = (
     <span
-      className={`flex shrink-0 items-center justify-center rounded-md ${
-        onDark ? 'bg-white/10 text-white' : 'bg-canvas-soft text-ink'
-      } ${isHero ? 'h-12 w-12' : 'h-10 w-10'}`}
+      className={`flex shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/[0.05] text-text transition-all duration-500 ease-out-quint group-hover:border-jade-400/40 group-hover:bg-jade-500/15 group-hover:text-jade-300 ${
+        isHero ? 'h-14 w-14' : 'h-11 w-11'
+      }`}
     >
       <Icon strokeWidth={1.5} className={isHero ? 'h-6 w-6' : 'h-5 w-5'} aria-hidden="true" />
     </span>
   )
 
   return (
-    <motion.article
-      variants={cardVariants}
-      className={`group relative flex flex-col rounded-lg border p-8 transition-[border-color,box-shadow,transform] duration-200 ease-out-quint hover:-translate-y-0.5 hover:shadow-float focus-within:shadow-float ${
-        onDark
-          ? 'border-canvas-night bg-canvas-night text-on-dark'
-          : 'border-hairline bg-canvas hover:border-hairline-strong'
-      } ${spans[service.size] ?? ''}`}
-    >
-      {!isWide && iconWell}
-
-      <div
-        className={
-          isWide
-            ? 'flex flex-1 flex-col gap-8 pt-6 lg:flex-row lg:items-center lg:gap-14 lg:pt-0'
-            : 'flex flex-1 flex-col'
-        }
+    <Reveal delay={index * 60} className={`h-full ${spans[service.size] ?? ''}`}>
+      <article
+        className={`group relative flex h-full flex-col overflow-hidden rounded-lg p-7 transition-all duration-500 ease-out-quint hover:-translate-y-1 sm:p-8 ${
+          isHero
+            ? 'glass-strong shadow-[0_30px_80px_-45px_rgba(0,0,0,0.9)]'
+            : 'glass hover:bg-white/[0.06]'
+        }`}
       >
-        <div className={isWide ? 'lg:w-[40%] lg:shrink-0' : ''}>
-          {isWide && <div className="mb-6">{iconWell}</div>}
+        {/* Gradient ring, revealed on hover */}
+        <span
+          aria-hidden="true"
+          className="ring-gradient pointer-events-none absolute inset-0 rounded-lg bg-[linear-gradient(140deg,rgba(78,226,172,0.75),rgba(234,221,198,0.28)_45%,transparent_72%)] opacity-0 transition-opacity duration-500 ease-out-quint group-hover:opacity-100 group-focus-within:opacity-100"
+        />
 
-          <h3
-            className={`${isHero ? 'mt-6 display-md' : isWide ? 'mt-0 heading-lg' : 'mt-5 heading-lg'} ${
-              onDark ? 'text-on-dark' : 'text-ink'
-            }`}
-          >
-            {service.name}
-          </h3>
-
-          <p
-            className={`mt-2.5 body-md ${onDark ? 'text-white/60' : 'text-ink-mute'} ${
-              isHero ? 'max-w-[38ch]' : ''
-            }`}
-          >
-            {service.summary}
-          </p>
-        </div>
-
-        {/* The developer DNA of the offering, shown rather than described. */}
         {isHero && (
-          <div className="mt-8 hidden flex-1 items-center lg:flex">
-            <div className="w-full rounded-sm bg-canvas-night-soft p-4">
-              {flowSteps.map((step, i) => (
-                <div key={step} className="flex gap-3 code-type text-[0.78rem] leading-6">
-                  <span className="tabular-nums text-white/30">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="whitespace-pre text-white/75">{step}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <Glow className="-right-24 -top-24 h-72 w-72 opacity-70 transition-opacity duration-700 group-hover:opacity-100" />
         )}
 
-        <ul
-          className={`flex flex-wrap gap-1.5 ${
-            isWide ? 'lg:flex-1' : isHero ? 'pt-8' : 'mt-auto pt-6'
-          }`}
+        {!isWide && iconWell}
+
+        <div
+          className={
+            isWide
+              ? 'flex flex-1 flex-col gap-8 pt-6 lg:flex-row lg:items-center lg:gap-14 lg:pt-0'
+              : 'flex flex-1 flex-col'
+          }
         >
-          {service.chips.map((chip) => (
-            <Chip key={chip} onDark={onDark}>
-              {chip}
-            </Chip>
-          ))}
-        </ul>
+          <div className={isWide ? 'lg:w-[40%] lg:shrink-0' : ''}>
+            {isWide && <div className="mb-6">{iconWell}</div>}
 
-        <div className={isWide ? 'lg:shrink-0' : 'mt-5'}>
-          <LearnMore label={isHero ? 'Explore automation' : 'Learn more'} onDark={onDark} />
+            <h3
+              className={`text-text ${
+                isHero ? 'mt-7 display-3' : isWide ? 'title-md lg:display-3' : 'mt-5 title-md'
+              }`}
+            >
+              {service.name}
+            </h3>
+
+            <p className={`mt-3 body-md text-text-mute ${isHero ? 'max-w-[40ch]' : ''}`}>
+              {service.summary}
+            </p>
+          </div>
+
+          {/* The tile is large, so it shows the agent working rather than
+              leaving the space empty. */}
+          {isHero && (
+            <ul className="mt-8 hidden flex-1 flex-col justify-center gap-2.5 lg:flex">
+              {whatsappThread.slice(0, 3).map((m, i) => {
+                const mine = m.from === 'us'
+                return (
+                  <li key={i} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+                    <span
+                      className={`max-w-[74%] rounded-lg px-3.5 py-2.5 caption leading-relaxed ${
+                        mine
+                          ? 'rounded-br-sm bg-jade-500/16 text-text'
+                          : 'rounded-bl-sm bg-white/[0.05] text-text-mute'
+                      }`}
+                    >
+                      {m.text}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+
+          <ul
+            className={`flex flex-wrap gap-1.5 ${
+              isWide ? 'lg:flex-1' : isHero ? 'pt-8' : 'mt-auto pt-6'
+            }`}
+          >
+            {service.chips.map((chip) => (
+              <Chip key={chip}>{chip}</Chip>
+            ))}
+          </ul>
+
+          <div
+            className={`flex items-center gap-1.5 text-[0.9rem] font-medium text-text ${
+              isWide ? 'lg:shrink-0' : 'mt-6'
+            }`}
+          >
+            {isHero ? 'Explore the agent' : 'Learn more'}
+            <ArrowUpRight
+              aria-hidden="true"
+              strokeWidth={1.8}
+              className="h-4 w-4 text-jade-300 transition-transform duration-300 ease-out-quint group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* One stretched link makes the whole tile a single, labelled target. */}
-      <a
-        href="#contact"
-        aria-label={`Learn more about ${service.name}`}
-        className="absolute inset-0 rounded-lg focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-deep"
-      />
-    </motion.article>
+        {/* One stretched link makes the whole tile a single, labelled target. */}
+        <a
+          href={service.href ?? '#contact'}
+          aria-label={`Learn more about ${service.name}`}
+          className="absolute inset-0 rounded-lg"
+        >
+          <span className="sr-only">Learn more about {service.name}</span>
+        </a>
+      </article>
+    </Reveal>
   )
 }
 
 export default function Services() {
-  const reduced = useReducedMotion()
-
   return (
-    <Section id="services" tone="canvas">
+    <Section id="services" tone="ground">
+      <Glow className="left-1/2 top-0 h-[30rem] w-[46rem] -translate-x-1/2" />
+
       <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
         <div className="lg:col-span-7">
-          <Eyebrow>Our services</Eyebrow>
-          <h2 className="mt-4 display-xl text-ink">Everything you need to scale online.</h2>
+          <Reveal>
+            <Eyebrow>Our services</Eyebrow>
+          </Reveal>
+          <Reveal delay={80} as="h2" className="mt-6 display-2 text-text">
+            Everything you need to scale online.
+          </Reveal>
         </div>
-        <p className="max-w-[46ch] self-end body-lg text-ink-mute lg:col-span-5">
-          From paid acquisition to websites and automation, we build marketing systems that
+        <Reveal
+          delay={140}
+          as="p"
+          className="max-w-[46ch] self-end body-lg text-text-mute lg:col-span-5"
+        >
+          From paid acquisition to websites and conversational AI, we build marketing systems that
           generate measurable growth.
-        </p>
+        </Reveal>
       </div>
 
-      <motion.div
-        variants={gridVariants}
-        initial={reduced ? 'show' : 'hidden'}
-        whileInView="show"
-        viewport={{ once: true, amount: 0.1 }}
-        className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:auto-rows-[minmax(18rem,auto)]"
-      >
-        {services.map((service) => (
-          <ServiceCard key={service.id} service={service} />
+      <div className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-2 lg:mt-20 lg:grid-cols-3 lg:auto-rows-[minmax(19rem,auto)]">
+        {services.map((service, i) => (
+          <ServiceCard key={service.id} service={service} index={i} />
         ))}
-      </motion.div>
+      </div>
     </Section>
   )
 }

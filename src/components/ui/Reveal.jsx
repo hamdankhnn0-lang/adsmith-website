@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 
-const prefersReducedMotion = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-
 /**
  * Fades and lifts children into view once, when they enter the viewport.
- * Falls back to rendering visible content when motion is reduced or when
- * IntersectionObserver is unavailable.
+ *
+ * The transition itself lives in CSS (the `reveal` utility) so no animation
+ * library ships to the browser. Staggering is done with a CSS custom property
+ * rather than timers, which keeps groups in sync.
+ *
+ * Falls back to visible content when IntersectionObserver is missing; reduced
+ * motion is handled in the stylesheet.
  */
 export default function Reveal({
   as: Tag = 'div',
   children,
   delay = 0,
-  distance = 24,
   className = '',
   ...rest
 }) {
@@ -24,7 +24,7 @@ export default function Reveal({
     const node = ref.current
     if (!node) return
 
-    if (prefersReducedMotion() || typeof IntersectionObserver === 'undefined') {
+    if (typeof IntersectionObserver === 'undefined') {
       setVisible(true)
       return
     }
@@ -36,7 +36,7 @@ export default function Reveal({
           observer.disconnect()
         }
       },
-      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+      { threshold: 0.08, rootMargin: '0px 0px -6% 0px' },
     )
 
     observer.observe(node)
@@ -46,13 +46,9 @@ export default function Reveal({
   return (
     <Tag
       ref={ref}
-      className={`transition-[opacity,transform] duration-[900ms] ease-out-quint will-change-transform ${
-        visible ? 'translate-y-0 opacity-100' : 'opacity-0'
-      } ${className}`}
-      style={{
-        transitionDelay: `${delay}ms`,
-        transform: visible ? undefined : `translateY(${distance}px)`,
-      }}
+      data-visible={visible}
+      style={delay ? { '--reveal-delay': `${delay}ms` } : undefined}
+      className={`reveal ${className}`}
       {...rest}
     >
       {children}

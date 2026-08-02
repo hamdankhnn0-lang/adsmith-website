@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Check } from 'lucide-react'
-import Section from './ui/Section.jsx'
+import Section, { Glow } from './ui/Section.jsx'
 import Eyebrow from './ui/Eyebrow.jsx'
 import Reveal from './ui/Reveal.jsx'
 import Button from './ui/Button.jsx'
@@ -8,29 +8,29 @@ import { brand, services } from '../data/site.js'
 
 /**
  * Where submissions go. Set VITE_FORM_ENDPOINT in `.env` to a Formspree form
- * URL, an n8n webhook, or any URL that accepts a JSON POST. See the README.
- * Left empty, the form runs in demo mode: it validates and shows the success
- * state, but sends nothing.
+ * URL or any URL that accepts a JSON POST. See the README. Left empty, the
+ * form runs in demo mode: it validates and shows the success state, but sends
+ * nothing.
  */
 const FORM_ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT ?? ''
 
 const fieldBase =
-  'w-full rounded-sm border border-hairline bg-canvas px-3 py-2 body-md text-ink placeholder:text-ink-faint transition-colors duration-200 focus:border-ink-faint focus:outline-none focus:ring-2 focus:ring-primary/40'
+  'w-full rounded-md border border-white/10 bg-white/[0.04] px-4 py-3 body-md text-text placeholder:text-text-faint transition-colors duration-300 focus:border-jade-400/60 focus:bg-white/[0.07] focus:outline-none'
 
 const chevron =
-  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'><path d='M2.5 4.5 6 8l3.5-3.5' stroke='%23707070' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/></svg>\")"
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'><path d='M2.5 4.5 6 8l3.5-3.5' stroke='%239bb0aa' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/></svg>\")"
 
 const initialForm = { name: '', email: '', company: '', service: '', message: '' }
 
 function Field({ label, htmlFor, error, children }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="mb-1.5 block caption font-medium text-ink">
+      <label htmlFor={htmlFor} className="mb-2 block micro text-text-mute">
         {label}
       </label>
       {children}
       {error && (
-        <p role="alert" className="mt-1.5 caption text-ink-mute">
+        <p role="alert" className="mt-2 caption text-jade-300">
           {error}
         </p>
       )}
@@ -98,19 +98,19 @@ function ContactForm() {
 
   if (status === 'sent') {
     return (
-      <div className="flex min-h-[26rem] flex-col items-start justify-center rounded-lg border border-hairline bg-canvas p-8 sm:p-10">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-on-primary">
-          <Check aria-hidden="true" strokeWidth={2.2} className="h-4 w-4" />
+      <div className="glass-strong flex min-h-[27rem] flex-col items-start justify-center rounded-lg p-8 sm:p-10">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-jade-500 text-on-jade">
+          <Check aria-hidden="true" strokeWidth={2.4} className="h-5 w-5" />
         </span>
-        <h3 className="mt-5 display-md text-ink">Request received.</h3>
-        <p className="mt-3 max-w-[40ch] body-md text-ink-mute">
+        <h3 className="mt-6 display-3 text-text">Request received.</h3>
+        <p className="mt-3 max-w-[40ch] body-md text-text-mute">
           Thanks. We will come back within one business day with next steps and a few questions
           before the audit.
         </p>
         <button
           type="button"
           onClick={() => setStatus('idle')}
-          className="mt-7 caption font-medium text-ink underline underline-offset-4"
+          className="mt-8 body-md font-medium text-jade-300 underline underline-offset-4 transition-colors hover:text-text"
         >
           Send another enquiry
         </button>
@@ -122,9 +122,9 @@ function ContactForm() {
     <form
       onSubmit={submit}
       noValidate
-      className="relative rounded-lg border border-hairline bg-canvas p-6 sm:p-8"
+      className="glass-strong relative rounded-lg p-6 sm:p-8"
     >
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Name" htmlFor="name" error={errors.name}>
           <input
             id="name"
@@ -170,26 +170,30 @@ function ContactForm() {
             name="service"
             value={form.service}
             onChange={update('service')}
-            className={`${fieldBase} appearance-none pr-9`}
+            className={`${fieldBase} appearance-none pr-10`}
             style={{
               backgroundImage: chevron,
               backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 0.75rem center',
+              backgroundPosition: 'right 1rem center',
               backgroundSize: '12px 12px',
             }}
           >
-            <option value="">Select a service</option>
+            <option value="" className="bg-ground-2">
+              Select a service
+            </option>
             {services.map((s) => (
-              <option key={s.id} value={s.name}>
+              <option key={s.id} value={s.name} className="bg-ground-2">
                 {s.name}
               </option>
             ))}
-            <option value="Not sure yet">Not sure yet</option>
+            <option value="Not sure yet" className="bg-ground-2">
+              Not sure yet
+            </option>
           </select>
         </Field>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-5">
         <Field label="What are you trying to grow?" htmlFor="message" error={errors.message}>
           <textarea
             id="message"
@@ -220,22 +224,22 @@ function ContactForm() {
       {status === 'error' && (
         <p
           role="alert"
-          className="mt-5 rounded-sm border border-hairline bg-canvas-soft px-4 py-3 caption text-ink"
+          className="mt-6 rounded-md border border-jade-400/30 bg-jade-500/10 px-4 py-3.5 body-md text-text"
         >
           That did not send, because the form service did not respond. Try once more, or email us
           directly at{' '}
-          <a href={`mailto:${brand.email}`} className="font-medium underline underline-offset-4">
+          <a href={`mailto:${brand.email}`} className="text-jade-300 underline underline-offset-4">
             {brand.email}
           </a>
           .
         </p>
       )}
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Button as="button" type="submit" size="lg" disabled={status === 'sending'}>
+      <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <Button as="button" type="submit" size="lg" withArrow disabled={status === 'sending'}>
           {status === 'sending' ? 'Sending…' : 'Request free audit'}
         </Button>
-        <p className="caption text-ink-mute-2 sm:max-w-[24ch]">
+        <p className="caption text-text-faint sm:max-w-[24ch]">
           No pitch decks. A written audit and a straight answer.
         </p>
       </div>
@@ -248,15 +252,15 @@ function BookingCard() {
   const slots = ['Tue 10:00', 'Tue 14:30', 'Wed 09:00', 'Wed 16:00', 'Thu 11:30', 'Fri 13:00']
 
   return (
-    <div className="rounded-lg border border-hairline bg-canvas p-6 sm:p-8">
+    <div className="glass rounded-lg p-6 sm:p-8">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="heading-lg text-ink">Book a 30 minute call</h3>
-          <p className="mt-1.5 caption text-ink-mute">
+          <h3 className="title-md text-text">Book a 30 minute call</h3>
+          <p className="mt-2 caption text-text-mute">
             A strategy call with a senior partner, not a sales rep.
           </p>
         </div>
-        <span className="shrink-0 rounded-full bg-canvas-soft px-2 py-0.5 micro text-ink-mute">
+        <span className="shrink-0 rounded-full border border-white/10 px-2.5 py-1 micro text-text-faint">
           Embed
         </span>
       </div>
@@ -266,10 +270,10 @@ function BookingCard() {
           <button
             key={slot}
             type="button"
-            className={`rounded-sm border px-3 py-2 caption tabular-nums transition-colors duration-200 ${
+            className={`rounded-md border px-3 py-2.5 caption tabular-nums transition-all duration-300 ${
               i === 1
-                ? 'border-primary bg-primary/10 text-ink'
-                : 'border-hairline text-ink-mute hover:border-hairline-strong hover:text-ink'
+                ? 'border-jade-400/50 bg-jade-500/12 text-text'
+                : 'border-white/10 text-text-mute hover:border-white/25 hover:text-text'
             }`}
           >
             {slot}
@@ -277,9 +281,9 @@ function BookingCard() {
         ))}
       </div>
 
-      <p className="mt-5 micro text-ink-mute-2">
+      <p className="mt-5 caption text-text-faint">
         Placeholder scheduler. Drop your Cal.com or Calendly embed into{' '}
-        <code className="code-type text-[0.72rem] text-ink-mute">BookingCard</code> to go live.
+        <code className="font-mono text-[0.78rem] text-text-mute">BookingCard</code> to go live.
       </p>
     </div>
   )
@@ -287,45 +291,51 @@ function BookingCard() {
 
 export default function Contact() {
   return (
-    <Section id="contact" tone="soft">
-      <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-        <div className="lg:col-span-5">
-          <Eyebrow>Start here</Eyebrow>
+    <Section id="contact" tone="ground">
+      <Glow className="left-1/2 -top-20 h-[30rem] w-[52rem] -translate-x-1/2" />
 
-          <h2 className="mt-4 display-xl text-ink">Let us forge your growth engine.</h2>
+      <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
+        <div className="min-w-0 lg:col-span-5">
+          <Reveal>
+            <Eyebrow>Start here</Eyebrow>
+          </Reveal>
 
-          <p className="mt-5 max-w-[44ch] body-lg text-ink-mute">
+          <Reveal delay={80} as="h2" className="mt-6 display-2 text-text">
+            Let us forge your growth engine.
+          </Reveal>
+
+          <Reveal delay={140} as="p" className="mt-6 max-w-[44ch] body-lg text-text-mute">
             Tell us where you are and what you want to grow. You will get a free audit of your
             accounts, tracking and funnel, plus a clear view of what we would change first.
-          </p>
+          </Reveal>
 
-          <Reveal delay={80} className="mt-8">
+          <Reveal delay={200} className="mt-10">
             <BookingCard />
           </Reveal>
 
-          <div className="mt-8 grid gap-5 border-t border-hairline pt-7 sm:grid-cols-2">
+          <Reveal delay={260} className="mt-10 grid gap-5 border-t border-white/8 pt-8 sm:grid-cols-2">
             <div>
-              <span className="block micro text-ink-mute-2">Email</span>
+              <span className="block micro text-text-faint">Email</span>
               <a
                 href={`mailto:${brand.email}`}
-                className="mt-1 block body-md text-ink underline underline-offset-4"
+                className="mt-2 block body-md text-text transition-colors hover:text-jade-300"
               >
                 {brand.email}
               </a>
             </div>
             <div>
-              <span className="block micro text-ink-mute-2">Phone</span>
+              <span className="block micro text-text-faint">Phone</span>
               <a
                 href={`tel:${brand.phone.replace(/[^\d+]/g, '')}`}
-                className="mt-1 block body-md text-ink underline underline-offset-4"
+                className="mt-2 block body-md text-text transition-colors hover:text-jade-300"
               >
                 {brand.phone}
               </a>
             </div>
-          </div>
+          </Reveal>
         </div>
 
-        <Reveal delay={100} className="lg:col-span-6 lg:col-start-7 lg:self-center">
+        <Reveal delay={160} className="min-w-0 lg:col-span-6 lg:col-start-7 lg:self-center">
           <ContactForm />
         </Reveal>
       </div>

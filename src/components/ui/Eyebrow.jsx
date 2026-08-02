@@ -1,17 +1,10 @@
-/**
- * Small label above a section title. On light bands it carries an emerald
- * dot, which is one of the few places the primary is allowed outside a CTA.
- */
-export default function Eyebrow({ children, tone = 'light', className = '' }) {
-  const onDark = tone === 'dark'
-
+/** Small capitalised label above a section title, in a frosted pill. */
+export default function Eyebrow({ children, className = '' }) {
   return (
     <span
-      className={`inline-flex items-center gap-2 caption font-medium ${
-        onDark ? 'text-white/60' : 'text-ink-mute'
-      } ${className}`}
+      className={`glass inline-flex items-center gap-2 rounded-full px-3 py-1.5 micro text-text-mute ${className}`}
     >
-      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-primary" />
+      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-jade-400 animate-breathe" />
       {children}
     </span>
   )

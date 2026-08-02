@@ -1,6 +1,7 @@
 # Adsmith — marketing site
 
-Single-page marketing site for **Adsmith**, a performance marketing and automation agency.
+Single page marketing site for **Adsmith**, a performance marketing agency building
+WhatsApp AI agents.
 Built with React 18, Vite and Tailwind CSS v4.
 
 > **Forged for Growth** — precision marketing, masterfully built.
@@ -19,37 +20,49 @@ Pages or any static host with no extra configuration.
 
 ## Design system
 
-The site commits to white. A calibrated grey ladder does the structural work and a single
-emerald primary is the only chromatic event on the page.
+A deep teal ink ground rather than black, so frosted panels and the jade primary sit in the
+same temperature family. Warm sand carries the editorial accents and keeps the palette off
+the usual dark plus one neon scheme.
 
 | Token | Value | Used for |
 | --- | --- | --- |
-| `primary` | `#3ecf8e` | Filled CTAs, wordmark accent, dot indicators |
-| `primary-deep` | `#24b47e` | Pressed state of the primary |
-| `on-primary` | `#171717` | Type on the emerald fill. Near black, never white |
-| `ink` | `#171717` | Body text and headings. Near black, never pure black |
-| `ink-mute` / `ink-mute-2` / `ink-faint` | `#707070` / `#9a9a9a` / `#b2b2b2` | Secondary, tertiary and placeholder text |
-| `canvas` / `canvas-soft` | `#ffffff` / `#fafafa` | Page ground and alternating bands |
-| `canvas-night` | `#1c1c1c` | Code blocks, product panes, featured cards only |
-| `hairline` / `hairline-strong` / `hairline-cool` | `#dfdfdf` / `#c7c7c7` / `#ededed` | 1px chrome on cards, tables and dividers |
+| `ground` / `ground-2` / `ground-3` | `#0a1315` / `#0e1b1e` / `#132528` | Page ground, alternating band, raised chrome |
+| `jade-500` | `#2fcf96` | Primary CTA fill, active dots |
+| `jade-400` / `jade-300` / `jade-200` | `#4ee2ac` / `#7ff0c6` / `#b6f7dd` | Accent type, gradient stops, icons on dark fills |
+| `on-jade` | `#04211a` | Type on the jade fill |
+| `sand` | `#eaddc6` | Warm accent, second gradient tone |
+| `text` / `text-mute` / `text-faint` | `#f2f6f4` / `#9bb0aa` / `#8a9d98` | Primary, secondary and tertiary copy |
 
-**Rules worth keeping.** Emerald is scarce: roughly one filled green button per viewport,
-never a whole surface. Dark is a card treatment, never a full marketing band. Buttons use
-the 6px radius, cards 12px; pill shapes are for tags only. No atmospheric gradients on
-section grounds. Product panels, not illustrations or photography, carry the visual weight.
+Greys are biased toward the accent hue rather than neutral, so nothing reads as an
+unconsidered default. `text-faint` is set light enough to clear 4.5:1 on the *lightest*
+frosted panel, not just on the base ground; darkening it breaks WCAG AA on glass.
 
-**Type** — Inter at weight 500 for the display tier with negative tracking that scales from
-about `-0.03em` at hero size down to `-0.015em`, and weight 400 for body. Never above 500,
-which is where the calibrated mid weight breaks. Code uses the system mono stack.
+**Surfaces.** `glass` and `glass-strong` are the two frosted treatments, both capped at a
+modest blur so low end mobile does not choke. `edge-light` adds the top hairline that reads
+as brushed metal. `ring-gradient` paints a 1px gradient border using two masks, and is what
+every card fades in on hover.
 
-Type tiers are utilities (`display-xxl`, `display-xl`, `display-lg`, `display-md`,
-`heading-lg`, `heading-md`, `body-lg`, `body-md`, `caption`, `micro`, `code-type`) defined
-alongside the tokens in the `@theme` block at the top of `src/index.css`, so re-skinning the
-site means editing that one file.
+**Type** — Bricolage Grotesque at 500 to 600 for display with tracking from `-0.035em` down
+to `-0.015em`, Inter at 400 to 500 for body. Tiers are utilities (`display-1`, `display-2`,
+`display-3`, `title-md`, `body-lg`, `body-md`, `caption`, `micro`) defined alongside the
+tokens in the `@theme` block at the top of `src/index.css`, so re-skinning the site means
+editing that one file.
 
 **Copy style** — the site is written without hyphens or dashes of any kind. Compounds are
 either spaced or reworded, and sentences break rather than lean on an em dash. Worth
 preserving when adding copy.
+
+## Performance and SEO
+
+- **No animation library.** Scroll reveals are an `IntersectionObserver` plus one CSS
+  utility, staggered through a `--reveal-delay` custom property. Dropping Framer Motion took
+  the bundle from 104 kB to 64 kB gzipped.
+- **Fonts load without blocking first paint**, via a preload plus a `media="print"` swap,
+  with a `noscript` fallback.
+- **Structured data**: `ProfessionalService` JSON-LD in `index.html` listing every service.
+- `robots.txt` and `sitemap.xml` ship in `public/`. Both point at `https://adsmith.agency/`,
+  so update that host and the `canonical` and `og:url` tags in `index.html` when the real
+  domain is attached.
 
 ## Structure
 
@@ -59,16 +72,16 @@ src/
   index.css               design tokens, keyframes, base styles, custom utilities
   data/site.js            every piece of copy: nav, services, industries, FAQs, footer
   components/
-    Navbar.jsx            sticky bar with the emerald CTA
-    Hero.jsx              headline, CTAs, composited product panes, stat row
+    Navbar.jsx            floating glass capsule bar
+    Hero.jsx              headline, CTAs, layered glass panels, stat row
     LogoMarquee.jsx       placeholder client wordmarks
-    Services.jsx          the 7 services as a bento grid; n8n tile is the dark card
+    Services.jsx          the 7 services as a bento grid; WhatsApp AI is the hero tile
+    WhatsAppAgent.jsx     WhatsApp AI Agent: benefits, handset mockup, capability grid
     Industries.jsx        6 client types as an accessible tab list + detail panel
     WhyAdsmith.jsx        4 value pillars
-    Process.jsx           4-step timeline (horizontal on desktop, vertical on mobile)
+    Process.jsx           4 step timeline (horizontal on desktop, vertical on mobile)
     Testimonials.jsx      placeholder quotes + proof stats
-    AutomationSpotlight.jsx  n8n and AI workflow section with a dark workflow pane
-    Faq.jsx               3-item accordion
+    Faq.jsx               3 item accordion
     Contact.jsx           contact form + scheduler placeholder
     Footer.jsx            wordmark, nav columns, socials
     ui/                   Button, Section, Eyebrow, Reveal, Wordmark, Icons
@@ -123,12 +136,11 @@ Three ways to receive it:
 | Option | Endpoint to use | Where you read submissions | Setup |
 | --- | --- | --- | --- |
 | **Formspree** | `https://formspree.io/f/xxxxxxxx` | Emailed to you, plus a dashboard archive | Sign up, create a form, paste the URL. ~5 minutes, free tier covers 50/month |
-| **n8n webhook** | `https://your-n8n-host/webhook/adsmith-contact` | Wherever you route it — email, WhatsApp, Google Sheet, CRM | A Webhook trigger node plus whatever you want it to do next |
+| **Your own endpoint** | any URL that accepts a JSON POST | Wherever you route it: email, WhatsApp, Google Sheet, CRM | One handler that forwards the payload |
 | **Netlify Forms** | — | Netlify dashboard, with email notifications | Netlify-only; needs a small change to the form markup |
 
-The n8n route is the one that matches what the site sells: the webhook can qualify the
-lead, notify you instantly, and file it — the "speed-to-lead" workflow described in the
-automation section.
+Routing submissions into the same stack that powers the WhatsApp agent is the option that
+matches what the site sells: qualify the lead, notify you instantly, and file it.
 
 Until an endpoint is set, the enquiry routes nowhere, so keep the email address and phone
 number in `data/site.js` accurate — those work with no configuration at all.
