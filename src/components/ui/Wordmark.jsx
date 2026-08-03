@@ -1,13 +1,13 @@
 /**
  * Adsmith lockup: the A mark plus the wordmark.
  *
- * The mark is redrawn as vector from the supplied logo. `barColor` lets the
- * accent bar follow the site palette on dark surfaces while the standalone
- * logo file keeps the original brand blue.
+ * The mark is redrawn as vector from the supplied logo. On screen the accent
+ * bar takes the site's jade so the page carries one accent rather than two;
+ * public/logo.svg keeps the original brand blue for print and social.
  */
 export const BRAND_BLUE = '#2563eb'
 
-export const AMark = ({ className = '', barColor = BRAND_BLUE, title }) => (
+export const AMark = ({ className = '', barColor = 'var(--color-jade-400)', title }) => (
   <svg
     viewBox="0 0 64 64"
     fill="none"
