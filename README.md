@@ -4,7 +4,7 @@ Single page marketing site for **Adsmith**, a performance marketing agency build
 WhatsApp AI agents.
 Built with React 18, Vite and Tailwind CSS v4.
 
-> **Forged for Growth** — precision marketing, masterfully built.
+> **Build. Market. Automate.** Precision marketing, masterfully built.
 
 ## Quick start
 
@@ -60,9 +60,10 @@ preserving when adding copy.
 - **Fonts load without blocking first paint**, via a preload plus a `media="print"` swap,
   with a `noscript` fallback.
 - **Structured data**: `ProfessionalService` JSON-LD in `index.html` listing every service.
-- `robots.txt` and `sitemap.xml` ship in `public/`. Both point at `https://adsmith.agency/`,
-  so update that host and the `canonical` and `og:url` tags in `index.html` when the real
-  domain is attached.
+- `robots.txt` and `sitemap.xml` ship in `public/`, pointing at `https://adsmithsolutions.com/`,
+  matching the `canonical`, `og:url` and JSON-LD entries in `index.html`.
+- Privacy and Terms are plain static pages in `public/`, so there is no router and no rewrite
+  rules are needed on shared hosting.
 
 ## Structure
 
@@ -74,17 +75,17 @@ src/
   components/
     Navbar.jsx            floating glass capsule bar
     Hero.jsx              headline, CTAs, layered glass panels, stat row
-    LogoMarquee.jsx       placeholder client wordmarks
+    ClientStrip.jsx       named client credibility strip
     Services.jsx          the 7 services as a bento grid; WhatsApp AI is the hero tile
     WhatsAppAgent.jsx     WhatsApp AI Agent: benefits, handset mockup, capability grid
     Industries.jsx        6 client types as an accessible tab list + detail panel
     WhyAdsmith.jsx        4 value pillars
     Process.jsx           4 step timeline (horizontal on desktop, vertical on mobile)
-    Testimonials.jsx      placeholder quotes + proof stats
+    Testimonials.jsx      the PizzaBox quote and the real result figures
     Faq.jsx               3 item accordion
-    Contact.jsx           contact form + scheduler placeholder
-    Footer.jsx            wordmark, nav columns, socials
-    ui/                   Button, Section, Eyebrow, Reveal, Wordmark, Icons
+    Contact.jsx           contact form with WhatsApp handoff, booking card
+    Footer.jsx            wordmark, nav columns, legal links
+    ui/                   Button, Section, Eyebrow, Reveal, Wordmark
 ```
 
 ### Editing copy
@@ -149,21 +150,31 @@ With `VITE_FORM_ENDPOINT` set, each submission arrives as JSON:
 The form carries a hidden honeypot field. Bots fill it, real people never see
 it, and those submissions are dropped without reaching WhatsApp or your endpoint.
 
-## Placeholders to replace before launch
+## Still outstanding before launch
 
-- **Logo** — `ui/Wordmark.jsx` renders a typographic lockup. Drop in a real logo file there
-  and in `public/favicon.svg`.
-- **Contact details** — `brand.email` and `brand.phone` in `data/site.js` are made up.
-- **Scheduler** — `BookingCard` in `Contact.jsx` is a styled stand-in. Replace it with a
-  Cal.com or Calendly embed.
-- **Testimonials and client logos** — placeholder names and wordmarks in `data/site.js`.
-- **Stats** — the hero and proof numbers are illustrative.
-- **Social links** — the footer icons point at `#`.
+Everything on the page is now real. These are the loose ends:
+
+- **The domain and mailbox.** `adsmithsolutions.com` and `enquiries@adsmithsolutions.com`
+  must exist and receive mail before the site goes live, or enquiries bounce.
+- **The logo** in `ui/Wordmark.jsx` is redrawn as vector from a screenshot. If the original
+  SVG turns up, swap it in for an exact match. `public/logo.svg` holds the blue version for
+  print and social; on screen the bar renders jade so the page carries one accent.
+- **Social profiles.** The footer row was removed rather than ship dead icons. Re-add it once
+  the accounts exist.
+- **Legal pages** in `public/privacy.html` and `public/terms.html` are drafts written to match
+  how the site actually behaves today. Worth a lawyer's eye before you take on clients abroad.
+- **A scheduler**, if you want real calendar booking rather than the WhatsApp route. Set
+  `VITE_BOOKING_URL`.
+
+Every figure on the site traces to the PizzaBox engagement. If those numbers change, they live
+in `proofStats` and `industries` in `src/data/site.js`.
 
 ## Accessibility and motion
 
 - Scroll reveals use `IntersectionObserver` and are disabled under
-  `prefers-reduced-motion: reduce`, along with the logo marquee.
+  `prefers-reduced-motion: reduce`.
+- Verified against the rendered page: one `h1`, no heading level jumps, every control has an
+  accessible name, every field has a label, and zero colour contrast failures at WCAG AA.
 - The industries tab list supports arrow-key navigation and full ARIA tab semantics.
 - The mobile menu locks background scroll, closes on `Escape`, and its links leave the tab
   order when closed.
