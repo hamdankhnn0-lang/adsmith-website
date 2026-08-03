@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check } from 'lucide-react'
+import { Check, Mail, MessageCircle } from 'lucide-react'
 import Section, { Glow } from './ui/Section.jsx'
 import Eyebrow from './ui/Eyebrow.jsx'
 import Reveal from './ui/Reveal.jsx'
@@ -7,12 +7,36 @@ import Button from './ui/Button.jsx'
 import { brand, phones, services } from '../data/site.js'
 
 /**
- * Where submissions go. Set VITE_FORM_ENDPOINT in `.env` to a Formspree form
- * URL or any URL that accepts a JSON POST. See the README. Left empty, the
- * form runs in demo mode: it validates and shows the success state, but sends
- * nothing.
+ * Two ways an enquiry can reach us, in priority order.
+ *
+ * 1. VITE_FORM_ENDPOINT, if set: the form POSTs JSON to it (Formspree, or any
+ *    endpoint of your own).
+ * 2. Otherwise the form hands off to WhatsApp with every field already written
+ *    into the message. No backend, no signup, and it lands where we actually
+ *    reply fastest.
+ *
+ * VITE_BOOKING_URL swaps the WhatsApp booking button for a real scheduler
+ * (Cal.com, Calendly) once one exists.
  */
 const FORM_ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT ?? ''
+const BOOKING_URL = import.meta.env.VITE_BOOKING_URL ?? ''
+
+/** Compose the enquiry as a readable WhatsApp message. */
+function waLink(number, form) {
+  const lines = [
+    'New enquiry from adsmithsolutions.com',
+    '',
+    `Name: ${form.name}`,
+    `Email: ${form.email}`,
+    form.company ? `Business: ${form.company}` : null,
+    `Interested in: ${form.service || 'Not sure yet'}`,
+    '',
+    form.message,
+    // Keep the empty strings above: they are the blank lines that make the
+    // message readable in WhatsApp. Only drop the optional company row.
+  ].filter((line) => line !== null)
+  return `https://wa.me/${number}?text=${encodeURIComponent(lines.join('\n'))}`
+}
 
 const fieldBase =
   'w-full rounded-md border border-white/10 bg-white/[0.04] px-4 py-3 body-md text-text placeholder:text-text-faint transition-colors duration-300 focus:border-jade-400/60 focus:bg-white/[0.07] focus:outline-none'
@@ -70,9 +94,11 @@ function ContactForm() {
       return
     }
 
+    // WhatsApp handoff. Opened synchronously inside the click so the browser
+    // does not treat it as an unrequested popup.
     if (!FORM_ENDPOINT) {
+      window.open(waLink(phones[0].wa, form), '_blank', 'noopener,noreferrer')
       setStatus('sent')
-      setForm(initialForm)
       return
     }
 
@@ -97,22 +123,53 @@ function ContactForm() {
   }
 
   if (status === 'sent') {
+    const viaWhatsApp = !FORM_ENDPOINT
     return (
       <div className="glass-strong flex min-h-[27rem] flex-col items-start justify-center rounded-lg p-8 sm:p-10">
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-jade-500 text-on-jade">
           <Check aria-hidden="true" strokeWidth={2.4} className="h-5 w-5" />
         </span>
-        <h3 className="mt-6 display-3 text-text">Request received.</h3>
+
+        <h3 className="mt-6 display-3 text-text">
+          {viaWhatsApp ? 'WhatsApp is open.' : 'Request received.'}
+        </h3>
+
         <p className="mt-3 max-w-[40ch] body-md text-text-mute">
-          Thanks. We will come back within one business day with next steps and a few questions
-          before the audit.
+          {viaWhatsApp
+            ? 'Your details are already written into the message. Press send and we will reply from there, usually within the hour.'
+            : 'Thanks. We will come back within one business day with next steps and a few questions before the audit.'}
         </p>
+
+        {viaWhatsApp && (
+          <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <a
+              href={waLink(phones[0].wa, form)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 body-md font-medium text-jade-300 underline underline-offset-4 transition-colors hover:text-text"
+            >
+              <MessageCircle aria-hidden="true" strokeWidth={1.8} className="h-4 w-4" />
+              Nothing opened? Try again
+            </a>
+            <a
+              href={`mailto:${brand.email}?subject=${encodeURIComponent('Enquiry from adsmithsolutions.com')}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`)}`}
+              className="inline-flex items-center gap-2 body-md text-text-mute underline underline-offset-4 transition-colors hover:text-text"
+            >
+              <Mail aria-hidden="true" strokeWidth={1.8} className="h-4 w-4" />
+              Send it by email instead
+            </a>
+          </div>
+        )}
+
         <button
           type="button"
-          onClick={() => setStatus('idle')}
-          className="mt-8 body-md font-medium text-jade-300 underline underline-offset-4 transition-colors hover:text-text"
+          onClick={() => {
+            setForm(initialForm)
+            setStatus('idle')
+          }}
+          className="mt-8 body-md font-medium text-text-mute underline underline-offset-4 transition-colors hover:text-text"
         >
-          Send another enquiry
+          Start a new enquiry
         </button>
       </div>
     )
@@ -239,51 +296,68 @@ function ContactForm() {
         <Button as="button" type="submit" size="lg" withArrow disabled={status === 'sending'}>
           {status === 'sending' ? 'Sending…' : 'Request free audit'}
         </Button>
-        <p className="caption text-text-faint sm:max-w-[24ch]">
-          No pitch decks. A written audit and a straight answer.
+        <p className="caption text-text-faint sm:max-w-[26ch]">
+          {FORM_ENDPOINT
+            ? 'No pitch decks. A written audit and a straight answer.'
+            : 'Opens WhatsApp with your details already filled in.'}
         </p>
       </div>
     </form>
   )
 }
 
-/** Placeholder for an embedded scheduler such as Cal.com or Calendly. */
+/**
+ * Booking card. Uses a real scheduler when VITE_BOOKING_URL is set, otherwise
+ * books over WhatsApp, which needs no third party account to work today.
+ */
 function BookingCard() {
-  const slots = ['Tue 10:00', 'Tue 14:30', 'Wed 09:00', 'Wed 16:00', 'Thu 11:30', 'Fri 13:00']
+  const bookingMessage = encodeURIComponent(
+    'Hi Adsmith, I would like to book a 30 minute call about growing my business.',
+  )
 
   return (
     <div className="glass rounded-lg p-6 sm:p-8">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="title-md text-text">Book a 30 minute call</h3>
-          <p className="mt-2 caption text-text-mute">
-            A strategy call with a senior partner, not a sales rep.
-          </p>
-        </div>
-        <span className="shrink-0 rounded-full border border-white/10 px-2.5 py-1 micro text-text-faint">
-          Embed
-        </span>
-      </div>
+      <h3 className="title-md text-text">Book a 30 minute call</h3>
+      <p className="mt-2 body-md text-text-mute">
+        A strategy call with someone who will actually do the work, not a sales rep. Pick
+        whichever is easier.
+      </p>
 
-      <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {slots.map((slot, i) => (
-          <button
-            key={slot}
-            type="button"
-            className={`rounded-md border px-3 py-2.5 caption tabular-nums transition-all duration-300 ${
-              i === 1
-                ? 'border-jade-400/50 bg-jade-500/12 text-text'
-                : 'border-white/10 text-text-mute hover:border-white/25 hover:text-text'
-            }`}
-          >
-            {slot}
-          </button>
-        ))}
+      <div className="mt-6 flex flex-col gap-2.5">
+        {BOOKING_URL ? (
+          <Button href={BOOKING_URL} target="_blank" rel="noopener noreferrer" size="lg" withArrow>
+            See available times
+          </Button>
+        ) : (
+          phones.map((p, i) => (
+            <Button
+              key={p.wa}
+              href={`https://wa.me/${p.wa}?text=${bookingMessage}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              size="lg"
+              variant={i === 0 ? 'primary' : 'glass'}
+              className="justify-between"
+            >
+              <span className="inline-flex items-center gap-2">
+                <MessageCircle aria-hidden="true" strokeWidth={1.8} className="h-4 w-4" />
+                WhatsApp {p.display}
+              </span>
+            </Button>
+          ))
+        )}
+
+        <a
+          href={`mailto:${brand.email}?subject=${encodeURIComponent('Booking a call with Adsmith')}`}
+          className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 body-md text-text-mute transition-colors duration-300 hover:text-text"
+        >
+          <Mail aria-hidden="true" strokeWidth={1.8} className="h-4 w-4" />
+          Or email {brand.email}
+        </a>
       </div>
 
       <p className="mt-5 caption text-text-faint">
-        Placeholder scheduler. Drop your Cal.com or Calendly embed into{' '}
-        <code className="font-mono text-[0.78rem] text-text-mute">BookingCard</code> to go live.
+        We reply to WhatsApp within the hour during business days.
       </p>
     </div>
   )
@@ -313,12 +387,14 @@ export default function Contact() {
             <BookingCard />
           </Reveal>
 
-          <Reveal delay={260} className="mt-10 grid gap-5 border-t border-white/8 pt-8 sm:grid-cols-2">
+          {/* Stacked rather than two up: the address is long enough that a
+              narrow column breaks it mid word. */}
+          <Reveal delay={260} className="mt-10 flex flex-col gap-6 border-t border-white/8 pt-8">
             <div>
               <span className="block micro text-text-faint">Email</span>
               <a
                 href={`mailto:${brand.email}`}
-                className="mt-2 block break-words body-md text-text transition-colors hover:text-jade-300"
+                className="mt-2 block body-md text-text transition-colors hover:text-jade-300"
               >
                 {brand.email}
               </a>

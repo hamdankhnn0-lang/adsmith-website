@@ -109,44 +109,45 @@ The site is a static bundle, so any static host works and none of them need a se
 Deploys then happen on every push to the branch. To ship a build by hand instead, run
 `npm run build` and drag the `dist` folder onto Netlify Drop.
 
-## Where form submissions land
+## Where enquiries land
 
-Out of the box the contact form runs in **demo mode**: it validates, shows the success
-state, and sends nothing anywhere. To start receiving enquiries, set one environment
-variable — `VITE_FORM_ENDPOINT` — to a URL that accepts a JSON `POST`. Copy `.env.example`
-to `.env` for local development, and set the same variable in your host's dashboard for
+The contact form and the booking card both work out of the box, with no backend
+and no third party account.
+
+**By default the form hands off to WhatsApp.** On submit it opens a chat to the
+first number in `phones` (see `src/data/site.js`) with the name, email, business,
+chosen service and message already written into the draft. The visitor presses
+send. The success panel also offers a retry link and an email fallback in case
+the handoff is blocked.
+
+**The booking card** offers both WhatsApp numbers with a prefilled booking
+message, plus an email link.
+
+Two optional environment variables change that behaviour. Copy `.env.example`
+to `.env` for local work and set the same values in your host's dashboard for
 production.
 
-Each submission is posted as JSON:
+| Variable | Effect when set |
+| --- | --- |
+| `VITE_FORM_ENDPOINT` | The form POSTs JSON to this URL instead of opening WhatsApp. Works with Formspree or any endpoint of your own. |
+| `VITE_BOOKING_URL` | The booking card shows a single "See available times" button pointing at your Cal.com or Calendly page. |
+
+With `VITE_FORM_ENDPOINT` set, each submission arrives as JSON:
 
 ```json
 {
-  "name": "Jordan Ellis",
-  "email": "jordan@harbourrow.com",
-  "company": "Harbour Row Hospitality",
-  "service": "Meta Ads",
-  "message": "Two restaurants in the city centre, weekday covers are soft.",
-  "submittedAt": "2026-07-26T11:38:19.200Z",
-  "page": "https://adsmith.agency/"
+  "name": "Ahmed Khan",
+  "email": "ahmed@karachibistro.pk",
+  "company": "Karachi Bistro",
+  "service": "WhatsApp AI Agent",
+  "message": "Two branches, we want WhatsApp ordering and ads.",
+  "submittedAt": "2026-08-03T09:14:22.410Z",
+  "page": "https://adsmithsolutions.com/"
 }
 ```
 
-Three ways to receive it:
-
-| Option | Endpoint to use | Where you read submissions | Setup |
-| --- | --- | --- | --- |
-| **Formspree** | `https://formspree.io/f/xxxxxxxx` | Emailed to you, plus a dashboard archive | Sign up, create a form, paste the URL. ~5 minutes, free tier covers 50/month |
-| **Your own endpoint** | any URL that accepts a JSON POST | Wherever you route it: email, WhatsApp, Google Sheet, CRM | One handler that forwards the payload |
-| **Netlify Forms** | — | Netlify dashboard, with email notifications | Netlify-only; needs a small change to the form markup |
-
-Routing submissions into the same stack that powers the WhatsApp agent is the option that
-matches what the site sells: qualify the lead, notify you instantly, and file it.
-
-Until an endpoint is set, the enquiry routes nowhere, so keep the email address and phone
-number in `data/site.js` accurate — those work with no configuration at all.
-
-The form also carries a hidden honeypot field. Bots fill it, real people never see it, and
-those submissions are dropped silently without reaching your endpoint.
+The form carries a hidden honeypot field. Bots fill it, real people never see
+it, and those submissions are dropped without reaching WhatsApp or your endpoint.
 
 ## Placeholders to replace before launch
 
