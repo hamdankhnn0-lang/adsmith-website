@@ -1,3 +1,4 @@
+import ScrollProgress from './components/ui/ScrollProgress.jsx'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import ClientStrip from './components/ClientStrip.jsx'
@@ -14,6 +15,7 @@ import Footer from './components/Footer.jsx'
 export default function App() {
   return (
     <>
+      <ScrollProgress />
       <Navbar />
       <main id="main" tabIndex={-1} className="focus:outline-none">
         <Hero />

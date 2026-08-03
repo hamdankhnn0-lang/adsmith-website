@@ -61,14 +61,17 @@ function ConversationMockup() {
           </div>
 
           {/* Thread */}
+          {/* Bubbles arrive one at a time when the phone scrolls into view,
+              rather than having played out before anyone got here. */}
           <ol className="space-y-2.5 px-4 py-5">
             {whatsappThread.map((m, i) => {
               const mine = m.from === 'us'
               return (
-                <li
+                <Reveal
+                  as="li"
                   key={i}
+                  delay={180 + i * 260}
                   className={`flex ${mine ? 'justify-end' : 'justify-start'}`}
-                  style={{ animation: `pop-in 0.5s var(--ease-out-quint) ${0.15 * i}s both` }}
                 >
                   <div
                     className={`max-w-[85%] rounded-lg px-3.5 py-2.5 ${
@@ -88,7 +91,7 @@ function ConversationMockup() {
                       {m.time}
                     </span>
                   </div>
-                </li>
+                </Reveal>
               )
             })}
           </ol>

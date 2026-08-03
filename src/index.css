@@ -75,6 +75,35 @@
   }
 }
 
+@keyframes shine {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(320%) skewX(-18deg);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.7em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes grow-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 @keyframes pop-in {
   from {
     opacity: 0;
@@ -256,5 +285,63 @@
   .reveal {
     opacity: 1;
     transform: none;
+  }
+}
+
+/**
+ * Headline words rise in one after another. The wrapper clips so each word
+ * appears to lift out of the line rather than fade on the spot.
+ */
+@utility word-rise {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* Room for descenders and commas, which a plain overflow clip would cut. */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+
+  & > span {
+    display: inline-block;
+    animation: rise-in 0.9s var(--ease-out-quint) both;
+    animation-delay: var(--word-delay, 0ms);
+  }
+}
+
+/** Bars that draw themselves out from the left when they come into view. */
+@utility bar-grow {
+  transform-origin: left;
+  animation: grow-bar 1.1s var(--ease-out-quint) both;
+  animation-delay: var(--bar-delay, 0ms);
+}
+
+/** A light sweep that crosses a button once on hover. */
+@utility sheen {
+  position: relative;
+  overflow: hidden;
+
+  & > .sheen-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  &:hover > .sheen-layer {
+    opacity: 1;
+    animation: shine 0.9s var(--ease-out-quint);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word-rise > span,
+  .bar-grow {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .sheen:hover > .sheen-layer {
+    animation: none;
+    opacity: 0;
   }
 }

@@ -27,18 +27,25 @@ export default function Button({
   ...rest
 }) {
   const Tag = as
+  const solid = variant === 'primary' || variant === 'sand'
 
   return (
     <Tag
-      className={`${base} ${variant === 'quiet' ? '' : sizes[size]} ${variants[variant]} ${className}`}
+      className={`${base} ${solid ? 'sheen' : ''} ${variant === 'quiet' ? '' : sizes[size]} ${variants[variant]} ${className}`}
       {...rest}
     >
-      <span>{children}</span>
+      {/* A single light sweep crosses solid buttons on hover. */}
+      {solid && (
+        <span aria-hidden="true" className="sheen-layer">
+          <span className="absolute inset-y-0 -left-1/3 w-1/3 bg-white/25 blur-[6px]" />
+        </span>
+      )}
+      <span className="relative">{children}</span>
       {withArrow && (
         <svg
           viewBox="0 0 16 16"
           aria-hidden="true"
-          className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 ease-out-quint group-hover:translate-x-1"
+          className="relative h-3.5 w-3.5 shrink-0 transition-transform duration-300 ease-out-quint group-hover:translate-x-1"
         >
           <path
             d="M1 8h13M9 3l5 5-5 5"

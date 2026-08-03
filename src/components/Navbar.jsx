@@ -6,6 +6,27 @@ import { navLinks } from '../data/site.js'
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const [active, setActive] = useState('')
+
+  // Highlight whichever section is currently under the bar.
+  useEffect(() => {
+    const ids = navLinks.map((l) => l.href.slice(1))
+    const sections = ids.map((id) => document.getElementById(id)).filter(Boolean)
+    if (!sections.length || typeof IntersectionObserver === 'undefined') return
+
+    const seen = new Map()
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => seen.set(e.target.id, e.intersectionRatio))
+        const best = [...seen.entries()].sort((a, b) => b[1] - a[1])[0]
+        setActive(best && best[1] > 0 ? best[0] : '')
+      },
+      { rootMargin: '-20% 0px -55% 0px', threshold: [0, 0.25, 0.5, 1] },
+    )
+
+    sections.forEach((s) => observer.observe(s))
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
@@ -51,16 +72,28 @@ export default function Navbar() {
           </a>
 
           <ul className="hidden items-center gap-1 lg:flex">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  className="rounded-full px-3.5 py-2 text-[0.9rem] text-text-mute transition-colors duration-300 hover:bg-white/5 hover:text-text"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = active === link.href.slice(1)
+              return (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    aria-current={isActive ? 'true' : undefined}
+                    className={`relative rounded-full px-3.5 py-2 text-[0.9rem] transition-colors duration-300 hover:bg-white/5 hover:text-text ${
+                      isActive ? 'text-text' : 'text-text-mute'
+                    }`}
+                  >
+                    {link.label}
+                    <span
+                      aria-hidden="true"
+                      className={`absolute inset-x-3.5 -bottom-0.5 h-px origin-center bg-jade-400 transition-transform duration-500 ease-out-quint ${
+                        isActive ? 'scale-x-100' : 'scale-x-0'
+                      }`}
+                    />
+                  </a>
+                </li>
+              )
+            })}
           </ul>
 
           <div className="hidden items-center gap-2 lg:flex">

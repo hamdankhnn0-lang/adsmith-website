@@ -14,7 +14,9 @@ const channels = [
 function HeroPanels() {
   return (
     <div className="relative">
-      <div className="glass edge-light rounded-lg p-5 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] sm:p-6">
+      {/* Extra bottom padding on large screens reserves empty space for the
+          floating pane to sit over, so it never covers a row of data. */}
+      <div className="glass edge-light rounded-lg p-5 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] sm:p-6 lg:pb-32">
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center gap-2 caption text-text-mute">
             <TrendingUp aria-hidden="true" strokeWidth={1.6} className="h-4 w-4 text-jade-400" />
@@ -25,7 +27,7 @@ function HeroPanels() {
         </div>
 
         <div className="mt-6 space-y-5">
-          {channels.map((c) => (
+          {channels.map((c, i) => (
             <div key={c.name}>
               <div className="flex items-baseline justify-between gap-3">
                 <span className="body-md text-text">{c.name}</span>
@@ -33,8 +35,8 @@ function HeroPanels() {
               </div>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/8">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-jade-600 to-jade-400"
-                  style={{ width: c.share }}
+                  className="bar-grow h-full rounded-full bg-gradient-to-r from-jade-600 to-jade-400"
+                  style={{ width: c.share, '--bar-delay': `${520 + i * 130}ms` }}
                 />
               </div>
             </div>
@@ -49,8 +51,10 @@ function HeroPanels() {
         </div>
       </div>
 
-      {/* Second pane, offset so the two read as a composite */}
-      <div className="glass-strong mt-4 rounded-lg p-4 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.9)] sm:absolute sm:-bottom-12 sm:-left-10 sm:mt-0 sm:w-[17.5rem] lg:-left-14">
+      {/* Second pane. Opaque rather than frosted: a translucent card stacked on
+          another card lets the text underneath bleed through. Floats only at
+          lg, where there is room for it; below that it stacks. */}
+      <div className="mt-4 rounded-lg border border-white/12 bg-ground-3 p-4 shadow-[0_24px_60px_-24px_rgba(0,0,0,1)] lg:absolute lg:-bottom-10 lg:-left-14 lg:mt-0 lg:w-[17rem]">
         <div className="flex items-center gap-2.5">
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-jade-500/15 text-jade-300">
             <MessageCircle aria-hidden="true" strokeWidth={1.7} className="h-4 w-4" />
@@ -59,7 +63,7 @@ function HeroPanels() {
           <span className="ml-auto h-1.5 w-1.5 rounded-full bg-jade-400 animate-breathe" />
         </div>
         <p className="mt-3 body-md text-text-mute">
-          Takes the order, books the table, answers the same question for the hundredth time.
+          Answers, qualifies and books. Every hour of every day.
         </p>
       </div>
     </div>
@@ -91,13 +95,28 @@ export default function Hero() {
               </span>
             </Reveal>
 
-            <Reveal delay={80} as="h1" className="mt-7 display-1 text-text">
-              Precision marketing,{' '}
-              <span className="bg-gradient-to-br from-jade-200 via-jade-400 to-jade-600 bg-clip-text text-transparent">
-                masterfully
-              </span>{' '}
-              built.
-            </Reveal>
+            {/* Words lift out of the line one after another on load. */}
+            <h1 className="mt-7 display-1 text-text">
+              {[
+                { word: 'Precision' },
+                { word: 'marketing,' },
+                {
+                  word: 'masterfully',
+                  className:
+                    'bg-gradient-to-br from-jade-200 via-jade-400 to-jade-600 bg-clip-text text-transparent',
+                },
+                { word: 'built.' },
+              ].map(({ word, className }, i) => (
+                <span
+                  key={word}
+                  className="word-rise"
+                  style={{ '--word-delay': `${120 + i * 75}ms` }}
+                >
+                  <span className={className}>{word}</span>
+                  {i < 3 ? ' ' : ''}
+                </span>
+              ))}
+            </h1>
 
             <Reveal delay={160} as="p" className="mt-7 max-w-[48ch] body-lg text-text-mute">
               We run the ads, build the site and put an AI agent on your WhatsApp. For restaurants,
