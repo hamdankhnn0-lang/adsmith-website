@@ -1,6 +1,6 @@
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
-import LogoMarquee from './components/LogoMarquee.jsx'
+import ClientStrip from './components/ClientStrip.jsx'
 import Services from './components/Services.jsx'
 import WhatsAppAgent from './components/WhatsAppAgent.jsx'
 import Industries from './components/Industries.jsx'
@@ -17,7 +17,7 @@ export default function App() {
       <Navbar />
       <main id="main" tabIndex={-1} className="focus:outline-none">
         <Hero />
-        <LogoMarquee />
+        <ClientStrip />
         <Services />
         <WhatsAppAgent />
         <Industries />

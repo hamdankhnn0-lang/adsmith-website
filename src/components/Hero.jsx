@@ -2,12 +2,12 @@ import { MessageCircle, TrendingUp } from 'lucide-react'
 import Button from './ui/Button.jsx'
 import Reveal from './ui/Reveal.jsx'
 import { Glow } from './ui/Section.jsx'
-import { heroStats } from '../data/site.js'
+import { brand, heroStats } from '../data/site.js'
 
 const channels = [
-  { name: 'Meta Ads', spend: '£12,480', roas: '5.1x', width: '92%' },
-  { name: 'Google Search', spend: '£8,240', roas: '4.4x', width: '74%' },
-  { name: 'TikTok Ads', spend: '£3,860', roas: '4.8x', width: '52%' },
+  { name: 'Meta Ads', spend: 'PKR 3.1 lac', share: '92%' },
+  { name: 'Google Search', spend: 'PKR 1.2 lac', share: '68%' },
+  { name: 'TikTok Ads', spend: 'PKR 70,000', share: '44%' },
 ]
 
 /** Layered glass panels standing in for the product, in place of stock imagery. */
@@ -18,9 +18,10 @@ function HeroPanels() {
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center gap-2 caption text-text-mute">
             <TrendingUp aria-hidden="true" strokeWidth={1.6} className="h-4 w-4 text-jade-400" />
-            Blended performance
+            Spend by channel
           </span>
-          <span className="micro text-text-faint">30 days</span>
+          {/* Labelled as an example so nobody reads it as a client account. */}
+          <span className="micro text-text-faint">Example</span>
         </div>
 
         <div className="mt-6 space-y-5">
@@ -28,14 +29,12 @@ function HeroPanels() {
             <div key={c.name}>
               <div className="flex items-baseline justify-between gap-3">
                 <span className="body-md text-text">{c.name}</span>
-                <span className="caption tabular-nums text-text-mute">
-                  {c.spend} · <span className="text-jade-300">{c.roas}</span>
-                </span>
+                <span className="caption tabular-nums text-text-mute">{c.spend}</span>
               </div>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/8">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-jade-600 to-jade-400"
-                  style={{ width: c.width }}
+                  style={{ width: c.share }}
                 />
               </div>
             </div>
@@ -43,9 +42,9 @@ function HeroPanels() {
         </div>
 
         <div className="mt-6 flex items-center justify-between border-t border-white/8 pt-4">
-          <span className="caption text-text-mute">Blended ROAS</span>
+          <span className="caption text-text-mute">One dashboard, every channel</span>
           <span className="font-display text-[1.35rem] font-semibold tabular-nums text-text">
-            4.7x
+            7
           </span>
         </div>
       </div>
@@ -60,7 +59,7 @@ function HeroPanels() {
           <span className="ml-auto h-1.5 w-1.5 rounded-full bg-jade-400 animate-breathe" />
         </div>
         <p className="mt-3 body-md text-text-mute">
-          Answered 214 chats today. Average reply in 4 seconds.
+          Takes the order, books the table, answers the same question for the hundredth time.
         </p>
       </div>
     </div>
@@ -88,7 +87,7 @@ export default function Hero() {
                   aria-hidden="true"
                   className="h-1.5 w-1.5 rounded-full bg-jade-400 animate-breathe"
                 />
-                Forged for Growth
+                {brand.tagline}
               </span>
             </Reveal>
 
@@ -101,8 +100,8 @@ export default function Hero() {
             </Reveal>
 
             <Reveal delay={160} as="p" className="mt-7 max-w-[48ch] body-lg text-text-mute">
-              Adsmith builds advertising systems and WhatsApp AI agents for restaurants, hotels,
-              local brands and premium SMEs. Engineered like craft, measured like finance.
+              We run the ads, build the site and put an AI agent on your WhatsApp. For restaurants,
+              hotels and local businesses across Pakistan.
             </Reveal>
 
             <Reveal delay={240} className="mt-9 flex flex-wrap items-center gap-3">

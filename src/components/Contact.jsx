@@ -4,7 +4,7 @@ import Section, { Glow } from './ui/Section.jsx'
 import Eyebrow from './ui/Eyebrow.jsx'
 import Reveal from './ui/Reveal.jsx'
 import Button from './ui/Button.jsx'
-import { brand, services } from '../data/site.js'
+import { brand, phones, services } from '../data/site.js'
 
 /**
  * Where submissions go. Set VITE_FORM_ENDPOINT in `.env` to a Formspree form
@@ -133,7 +133,7 @@ function ContactForm() {
             autoComplete="name"
             value={form.name}
             onChange={update('name')}
-            placeholder="Jordan Ellis"
+            placeholder="Your name"
             className={fieldBase}
           />
         </Field>
@@ -159,7 +159,7 @@ function ContactForm() {
             autoComplete="organization"
             value={form.company}
             onChange={update('company')}
-            placeholder="Harbour Row Hospitality"
+            placeholder="Your business name"
             className={fieldBase}
           />
         </Field>
@@ -201,7 +201,7 @@ function ContactForm() {
             rows={4}
             value={form.message}
             onChange={update('message')}
-            placeholder="Two restaurants in the city centre, weekday covers are soft, currently running boosted posts only…"
+            placeholder="Two branches in Peshawar. Weekday orders are slow and we are only boosting posts right now."
             className={`${fieldBase} resize-none`}
           />
         </Field>
@@ -318,19 +318,24 @@ export default function Contact() {
               <span className="block micro text-text-faint">Email</span>
               <a
                 href={`mailto:${brand.email}`}
-                className="mt-2 block body-md text-text transition-colors hover:text-jade-300"
+                className="mt-2 block break-words body-md text-text transition-colors hover:text-jade-300"
               >
                 {brand.email}
               </a>
             </div>
             <div>
-              <span className="block micro text-text-faint">Phone</span>
-              <a
-                href={`tel:${brand.phone.replace(/[^\d+]/g, '')}`}
-                className="mt-2 block body-md text-text transition-colors hover:text-jade-300"
-              >
-                {brand.phone}
-              </a>
+              <span className="block micro text-text-faint">WhatsApp</span>
+              {phones.map((p) => (
+                <a
+                  key={p.wa}
+                  href={`https://wa.me/${p.wa}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 block body-md text-text transition-colors hover:text-jade-300"
+                >
+                  {p.display}
+                </a>
+              ))}
             </div>
           </Reveal>
         </div>

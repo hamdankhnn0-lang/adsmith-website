@@ -5,12 +5,20 @@
 
 export const brand = {
   name: 'Adsmith',
-  tagline: 'Forged for Growth',
+  tagline: 'Build. Market. Automate.',
   promise: 'Precision marketing, masterfully built.',
-  email: 'hello@adsmith.agency',
-  phone: '+1 (555) 014 2280',
-  location: 'Working remotely with clients across 9 time zones',
+  email: 'enquiries@adsmithsolutions.com',
+  domain: 'adsmithsolutions.com',
+  city: 'Peshawar',
+  country: 'Pakistan',
+  location: 'Based in Peshawar. Working with businesses across Pakistan and beyond.',
 }
+
+/** Both numbers are WhatsApp, so both link to chat rather than a dialler. */
+export const phones = [
+  { display: '+92 370 190 9372', wa: '923701909372' },
+  { display: '+92 325 655 5185', wa: '923256555185' },
+]
 
 export const navLinks = [
   { label: 'Services', href: '#services' },
@@ -20,11 +28,15 @@ export const navLinks = [
   { label: 'WhatsApp AI', href: '#whatsapp' },
 ]
 
+/**
+ * Facts, not metrics. We do not have volume numbers worth publishing yet, so
+ * these state what is true today rather than inventing a track record.
+ */
 export const heroStats = [
-  { value: '$40M+', label: 'Ad spend under management' },
-  { value: '4.7x', label: 'Median blended ROAS' },
-  { value: '60k+', label: 'WhatsApp chats handled monthly' },
-  { value: '11', label: 'Industries served' },
+  { value: '24/7', label: 'Your WhatsApp agent never sleeps' },
+  { value: '7', label: 'Services under one roof' },
+  { value: 'Pakistan wide', label: 'Working nationwide from Peshawar' },
+  { value: 'Free', label: 'Growth audit before you commit' },
 ]
 
 /**
@@ -38,7 +50,7 @@ export const services = [
     icon: 'whatsapp',
     name: 'WhatsApp AI Agent',
     summary:
-      'An intelligent agent that answers every WhatsApp message in seconds, qualifies the lead, takes the order and books the appointment. Available around the clock.',
+      'It answers every message in seconds, takes the order, qualifies the lead and books the appointment. Day and night, without a person on the other end.',
     chips: ['24/7 Replies', 'Lead Qualification', 'CRM Integration', 'Multi language'],
     size: 'lg',
     featured: true,
@@ -49,35 +61,35 @@ export const services = [
     icon: 'meta',
     name: 'Meta Ads',
     summary:
-      'Facebook and Instagram campaigns engineered around creative testing and profitable scale.',
+      'Facebook and Instagram campaigns built around creative that gets tested properly and spend that stays profitable.',
     chips: ['Creative Testing', 'CAPI Tracking', 'Retargeting', 'Analytics'],
   },
   {
     id: 'google-ads',
     icon: 'search',
     name: 'Google Ads',
-    summary: 'Structured to capture demand at the exact moment buying intent appears.',
+    summary: 'Catch people at the exact moment they are looking to buy what you sell.',
     chips: ['Search', 'Performance Max', 'Shopping', 'Display'],
   },
   {
     id: 'tiktok-ads',
     icon: 'video',
     name: 'TikTok Ads',
-    summary: 'Native creative that stops the scroll, paired with disciplined media buying.',
+    summary: 'Creative that stops the scroll, backed by media buying that stays disciplined.',
     chips: ['UGC', 'Spark Ads', 'Hook Testing', 'Creators'],
   },
   {
     id: 'social',
     icon: 'social',
     name: 'Social Media',
-    summary: 'An editorial content engine that keeps your brand as premium as the product.',
+    summary: 'A steady stream of content that makes your brand look as good as your product.',
     chips: ['Content', 'Reels', 'Strategy', 'Branding'],
   },
   {
     id: 'gmb',
     icon: 'pin',
     name: 'Google Business Profile',
-    summary: 'Local visibility done properly, from listings and reviews to map pack rankings.',
+    summary: 'Get found on Maps. Listings, reviews and the local rankings that bring people in.',
     chips: ['Listings', 'Reviews', 'Local SEO', 'Maps'],
   },
   {
@@ -85,53 +97,58 @@ export const services = [
     icon: 'web',
     name: 'Website Development',
     summary:
-      'Fast, elegant sites and landing pages built to load instantly, rank well and turn traffic into booked business.',
-    chips: ['Landing Pages', 'CRO', 'Headless', 'Core Web Vitals'],
+      'Sites and landing pages that load fast, rank well and turn visitors into orders. We also take over the hosting headaches.',
+    chips: ['Landing Pages', 'CRO', 'Hosting', 'Core Web Vitals'],
     size: 'wide',
   },
 ]
 
+/**
+ * `metric` is a real result only where we have one. Everywhere else it names
+ * the job to be done, so nothing on this page is a number we cannot back up.
+ */
 export const industries = [
   {
     id: 'restaurants',
     name: 'Restaurants',
-    line: 'Fill quiet covers, launch new menus and turn first time diners into regulars.',
-    metric: '38% more weekday covers',
-    points: ['Reservation campaigns', 'Menu launch creative', 'Review engine'],
+    line: 'Fill the quiet nights, push the new menu, and turn a first order into a regular one.',
+    metric: '70+ orders a day for PizzaBox',
+    proven: true,
+    points: ['Order campaigns', 'Menu launch creative', 'WhatsApp ordering'],
   },
   {
     id: 'cafes',
     name: 'Cafés',
-    line: 'Own your neighbourhood on Maps and build a loyal morning rush that shows up daily.',
-    metric: '2.4x map pack views',
-    points: ['Local search dominance', 'Loyalty campaigns', 'Daily content'],
+    line: 'Own your corner of the map and build a morning rush that shows up without being asked.',
+    metric: 'Local search and loyalty',
+    points: ['Maps visibility', 'Loyalty campaigns', 'Daily content'],
   },
   {
     id: 'hotels',
     name: 'Hotels',
-    line: 'Drive direct bookings and reduce OTA dependency with demand capture led by your brand.',
-    metric: '31% less OTA reliance',
-    points: ['Direct booking funnels', 'Seasonal offers', 'Concierge AI replies'],
+    line: 'Take bookings directly instead of handing a cut to the booking sites every time.',
+    metric: 'Direct bookings',
+    points: ['Booking funnels', 'Seasonal offers', 'Concierge AI replies'],
   },
   {
     id: 'local',
     name: 'Local Businesses',
-    line: 'Show up first in your area, then convert the calls and visits without lifting a finger.',
-    metric: '3.1x qualified calls',
+    line: 'Show up first in your area, then let the agent handle the calls and messages that follow.',
+    metric: 'Found first, locally',
     points: ['Targeted local ads', 'Call tracking', 'Profile management'],
   },
   {
     id: 'service',
     name: 'Service Businesses',
-    line: 'A predictable pipeline of booked appointments, qualified and followed up automatically.',
-    metric: '54% faster lead response',
-    points: ['Lead campaigns', 'Instant speed to lead', 'CRM sync'],
+    line: 'A steady queue of booked appointments, qualified and followed up before you get to them.',
+    metric: 'Booked appointments',
+    points: ['Lead campaigns', 'Instant replies', 'CRM sync'],
   },
   {
     id: 'sme',
     name: 'Premium SMEs',
-    line: 'Enterprise grade marketing systems, sized and priced for a lean, ambitious team.',
-    metric: '6 hrs saved weekly',
+    line: 'The kind of marketing setup bigger companies run, sized for a team that has to stay lean.',
+    metric: 'Built to scale',
     points: ['Full funnel strategy', 'Reporting dashboards', 'AI support desk'],
   },
 ]
@@ -140,22 +157,22 @@ export const pillars = [
   {
     number: '01',
     title: 'Precision',
-    body: 'Every campaign starts with clean measurement. No vanity metrics and no guesswork. Decisions are made against contribution margin and cost per booked outcome.',
+    body: 'We start by making sure the numbers are right. No vanity metrics. Every decision comes back to what an order actually costs you and what it is worth.',
   },
   {
     number: '02',
     title: 'AI first',
-    body: 'If a conversation repeats, an agent should handle it. Our WhatsApp AI answers, qualifies and books around the clock, so your team only touches the work that needs a human.',
+    body: 'If the same conversation happens fifty times a day, a person should not be having it. The agent answers, qualifies and books. Your team handles what needs a human.',
   },
   {
     number: '03',
-    title: 'Global standards',
-    body: 'The craft standard we hold is international: brand systems, creative and analytics built to hold up next to companies ten times your size.',
+    title: 'One team',
+    body: 'Ads, website, hosting, content and the agent all sit with us. When something breaks at eleven at night, you make one call, not four.',
   },
   {
     number: '04',
     title: 'Proven systems',
-    body: 'We do not reinvent the wheel per client. Account structures and creative frameworks that have already been proven get deployed on day one, then tuned to your market.',
+    body: 'We do not start from scratch on every client. What already works gets deployed in week one, then tuned to your market.',
   },
 ]
 
@@ -163,70 +180,56 @@ export const processSteps = [
   {
     step: '01',
     title: 'Audit and Blueprint',
-    body: 'We pull apart your existing accounts, tracking, funnel and competitors, then hand you a written growth blueprint. It is yours whether we work together or not.',
+    body: 'We go through your accounts, your tracking, your funnel and your competitors. You get a written plan at the end of it, whether you hire us or not.',
     duration: 'Week 1',
   },
   {
     step: '02',
     title: 'Forge',
-    body: 'Tracking is rebuilt, account structures are laid out, creative goes into production and your WhatsApp AI agent is trained on your menu, services and tone.',
+    body: 'Tracking gets rebuilt. Campaigns get structured. Creative goes into production and your WhatsApp agent learns your menu, your services and how you talk.',
     duration: 'Weeks 2 to 3',
   },
   {
     step: '03',
     title: 'Launch and Learn',
-    body: 'Campaigns go live with a structured testing roadmap. Weekly reviews focus on the two or three levers that actually move the number.',
+    body: 'Campaigns go live with a testing plan behind them. Every week we look at the two or three things actually moving the number and ignore the rest.',
     duration: 'Weeks 4 to 6',
   },
   {
     step: '04',
     title: 'Scale and Systemise',
-    body: 'Winners get more budget, losers get cut, and every repeatable conversation gets handed to the agent so growth does not cost you headcount.',
+    body: 'Winners get more budget. Losers get cut. Anything repetitive gets handed to the agent, so growing does not mean hiring.',
     duration: 'Ongoing',
   },
 ]
 
-export const testimonials = [
-  {
-    quote:
-      'We went from guessing at our marketing to knowing exactly what a booked table costs us. Three months in, weekday covers are up and the reporting finally makes sense.',
-    name: 'Placeholder Name',
-    role: 'Owner',
-    company: 'Restaurant Group · Placeholder',
-  },
-  {
-    quote:
-      'The WhatsApp agent alone paid for the retainer. Enquiries get answered in under a minute now, and nothing falls through the cracks on a busy weekend.',
-    name: 'Placeholder Name',
-    role: 'Director of Operations',
-    company: 'Boutique Hotel · Placeholder',
-  },
-  {
-    quote:
-      'Adsmith is the first agency that felt like part of the team. Sharp strategy, beautiful creative, and they never hide behind a dashboard.',
-    name: 'Placeholder Name',
-    role: 'Founder',
-    company: 'Premium SME · Placeholder',
-  },
+/** One real client, quoted with permission. Attributed by role, not by name. */
+export const testimonial = {
+  quote:
+    'We are very happy with the work Adsmith has done for us, and with the time and attention they give our business.',
+  role: 'Owner',
+  company: 'PizzaBox',
+}
+
+/** Results from the PizzaBox engagement. Every figure here is real. */
+export const proofStats = [
+  { value: '70+', label: 'Orders a day driven by ads' },
+  { value: 'PKR 2 crore', label: 'In sales from PKR 5 lac of ad spend' },
+  { value: '1 year', label: 'Working together and still going' },
 ]
 
-export const clientLogos = [
-  'NORTHGATE',
-  'MAISON & CO',
-  'HARBOUR ROW',
-  'ATELIER 9',
-  'VERDE CAFÉ',
-  'THE BRASS LAMP',
-  'KINDRED HOTELS',
-  'STONEBRIDGE',
-]
+export const client = {
+  name: 'PizzaBox',
+  descriptor: 'one of the leading restaurant chains in Peshawar',
+  scale: '1000+ orders a day',
+}
 
 /* ------------------------------------------------------- WhatsApp AI Agent */
 
 export const whatsapp = {
   heading: 'Close your call center. Let AI handle your WhatsApp.',
   subheading:
-    'Automate customer support, order taking, lead qualification, appointment booking, FAQs and sales, all through an intelligent WhatsApp AI Agent available 24/7.',
+    'Support, orders, lead qualification, appointment booking, FAQs and sales. All of it handled on WhatsApp by an agent that works every hour of every day.',
   cta: 'Book a free WhatsApp AI demo',
 }
 
@@ -254,30 +257,30 @@ export const whatsappBenefits = [
   'Scale without hiring',
 ]
 
-/** Scripted exchange used by the phone mockup in the WhatsApp section. */
+/** Scripted exchange used by the phone mockup. Written to match a real order. */
 export const whatsappThread = [
-  { from: 'them', text: 'Hi, do you have a table for 4 tonight at 8?', time: '19:02' },
-  { from: 'us', text: 'We do. Would you like the terrace or the main room?', time: '19:02' },
-  { from: 'them', text: 'Terrace please. One guest is vegan.', time: '19:03' },
+  { from: 'them', text: 'Do you deliver to Hayatabad? Want 2 large pepperoni', time: '20:14' },
+  { from: 'us', text: 'We do. 2 large pepperoni is PKR 3,400. Any drinks with that?', time: '20:14' },
+  { from: 'them', text: 'Add 2 cokes. Cash on delivery', time: '20:15' },
   {
     from: 'us',
-    text: 'Booked, terrace at 20:00 for 4. Vegan menu noted. See you tonight.',
-    time: '19:03',
+    text: 'Order confirmed, PKR 3,700. Rider reaches you in about 35 minutes.',
+    time: '20:15',
   },
 ]
 
 export const faqs = [
   {
-    q: 'What does a typical engagement look like?',
-    a: 'Most clients start with a paid growth blueprint, then move onto a monthly retainer covering media buying, creative and the WhatsApp AI agent. The minimum initial term is three months, which is long enough to prove the system works.',
+    q: 'How do you charge?',
+    a: 'Most clients start with a paid growth blueprint. After that it is a monthly retainer covering the media buying, the creative and the agent. Minimum three months to start, because anything shorter does not give the system time to prove itself.',
   },
   {
-    q: 'Do you work with businesses outside your listed industries?',
-    a: 'Often, yes. Our systems suit any business with a clear offer and a real margin. If we are not the right fit, we will say so on the first call.',
+    q: 'Do you only work with restaurants?',
+    a: 'No. Restaurants are where we have the deepest results, but the same setup works for any business with a clear offer and real margin. If we are not the right fit for you, we will tell you on the first call.',
   },
   {
     q: 'Who owns the accounts and the AI agent?',
-    a: 'You do, always. Ad accounts, pixels, your WhatsApp Business number, the agent knowledge base and all documentation are yours, set up under your ownership from day one.',
+    a: 'You do. Ad accounts, pixels, your WhatsApp Business number, the knowledge base the agent is trained on, all of it is set up in your name from day one. If we ever part ways, you keep everything.',
   },
 ]
 
@@ -312,6 +315,8 @@ export const footerColumns = [
       { label: 'Process', href: '#process' },
       { label: 'Results', href: '#proof' },
       { label: 'Contact', href: '#contact' },
+      { label: 'Privacy Policy', href: '/privacy.html' },
+      { label: 'Terms of Service', href: '/terms.html' },
     ],
   },
 ]

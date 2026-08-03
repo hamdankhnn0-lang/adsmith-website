@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://adsmith.agency/sitemap.xml
+Sitemap: https://adsmithsolutions.com/sitemap.xml
