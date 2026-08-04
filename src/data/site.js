@@ -7,7 +7,7 @@ export const brand = {
   name: 'Adsmith',
   tagline: 'Build. Market. Automate.',
   promise: 'Precision marketing, masterfully built.',
-  email: 'enquiries@adsmithsolutions.com',
+  email: 'adsmithenquiries@gmail.com',
   domain: 'adsmithsolutions.com',
   city: 'Peshawar',
   country: 'Pakistan',

@@ -9,23 +9,28 @@
  * Upload this alongside index.html in public_html.
  *
  * ---------------------------------------------------------------------------
- * BEFORE THIS WORKS: the TO_ADDRESS mailbox has to exist. Create it in cPanel
- * under Email Accounts. Mail sent to an address that does not exist is dropped
- * silently and you will never see the enquiry.
+ * DELIVERABILITY: TO_ADDRESS is a Gmail inbox, and this sends through a
+ * shared hosting server that Gmail has no reason to trust yet. The first few
+ * messages are likely to land in Spam rather than Inbox. Open one and mark it
+ * "Not spam" as soon as it arrives; that trains Gmail to trust the sender
+ * going forward. If enquiries never arrive at all, check .enquiries.log
+ * (see below) before assuming the form is broken.
  * ---------------------------------------------------------------------------
  */
 
 declare(strict_types=1);
 
-/** Where enquiries are delivered. */
-const TO_ADDRESS = 'enquiries@adsmithsolutions.com';
+/** Where enquiries are delivered. Free Gmail inbox, checked manually. */
+const TO_ADDRESS = 'adsmithenquiries@gmail.com';
 
 /**
- * The envelope sender. This must be an address on your own domain or the mail
- * will be rejected as spoofing. It is not where replies go; Reply-To handles
- * that, and is set to whoever filled in the form.
+ * The envelope sender. This has to be an address on the sending server's own
+ * domain, never on Gmail's, or the send is spoofing and gets rejected outright
+ * rather than merely filtered. It does not need its own inbox: nothing is
+ * meant to arrive here, and replies go to whoever filled in the form via
+ * Reply-To below.
  */
-const FROM_ADDRESS = 'website@adsmithsolutions.com';
+const FROM_ADDRESS = 'noreply@adsmithsolutions.com';
 
 const SITE_NAME = 'Adsmith';
 const MAX_BODY_BYTES = 20000;

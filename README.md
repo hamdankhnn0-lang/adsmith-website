@@ -106,13 +106,19 @@ Almost all text lives in `src/data/site.js`. Adding a service is a new entry in
 
 The site is static plus one PHP file, which is exactly what shared hosting is good at.
 
-**1. Create the mailbox first.** In cPanel go to Email Accounts and create both:
+**1. Set up mail delivery first.** Enquiries land in `adsmithenquiries@gmail.com`, an
+ordinary free Gmail inbox, so there is nothing to create there. There is one thing to create
+in cPanel though: under Email Accounts, add `noreply@adsmithsolutions.com`. It needs no
+inbox and nobody ever logs into it; it exists purely so the domain has a legitimate address
+to send *from*, which is what stops the host rejecting the send as spoofing. Skip it and
+`contact.php` sends nothing.
 
-- `enquiries@adsmithsolutions.com` — where enquiries are delivered
-- `website@adsmithsolutions.com` — the address the form sends *from*
-
-Without the first one, mail is delivered nowhere and you will never see an enquiry. Without
-the second, the host will likely reject the send as spoofing.
+**Expect the first few enquiries to land in Gmail's Spam folder**, not Inbox. Shared hosting
+IPs have no sending history with Google, and Gmail is unforgiving of that regardless of how
+correct the message is. Open the first one and mark it "Not spam" as soon as it arrives;
+that teaches Gmail to trust the sender, and the ones after tend to land properly. If nothing
+arrives at all, including in Spam, that is a different problem: read
+**Where enquiries land** further down for the fallback log that catches it either way.
 
 **2. Build.**
 
@@ -156,10 +162,14 @@ instead. Build command `npm run build`, publish directory `dist`.
 
 The form posts to **`/contact.php`**, which ships in `public/`. It validates the submission,
 drops anything that trips the honeypot, guards against header injection, and emails the
-enquiry to the address at the top of that file. `Reply-To` is set to whoever filled the form
-in, so replying goes straight back to them.
+enquiry to `adsmithenquiries@gmail.com`. `Reply-To` is set to whoever filled the form in,
+so replying goes straight back to them, not to the Gmail account.
 
-Change the recipient by editing `TO_ADDRESS` in `public/contact.php`.
+That address is a free Gmail inbox rather than a mailbox on the domain, which is cheaper but
+means Google has no reason yet to trust mail arriving from a shared host. The first few
+enquiries commonly land in Spam. Marking one "Not spam" fixes it for the ones after. If a
+paid mailbox on the domain is set up later, change the recipient by editing `TO_ADDRESS` in
+`public/contact.php`; mail sent from and to the same domain does not carry this problem.
 
 **When the post fails**, the form does not simply give up. The error panel keeps everything
 typed and offers two working routes out: a WhatsApp link with the whole enquiry already
@@ -191,8 +201,9 @@ Submissions arrive as JSON:
 
 Everything on the page is now real. These are the loose ends:
 
-- **The domain and mailbox.** `adsmithsolutions.com` and `enquiries@adsmithsolutions.com`
-  must exist and receive mail before the site goes live, or enquiries bounce.
+- **The domain.** `adsmithsolutions.com` needs to exist and resolve before the site goes
+  live. Enquiries themselves go to `adsmithenquiries@gmail.com`, which already works; check
+  its Spam folder for the first few, per the note in Going Live above.
 - **The logo** in `ui/Wordmark.jsx` is redrawn as vector from a screenshot. If the original
   SVG turns up, swap it in for an exact match. `public/logo.svg` holds the blue version for
   print and social; on screen the bar renders jade so the page carries one accent.
