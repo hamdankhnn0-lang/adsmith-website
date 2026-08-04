@@ -1,26 +1,35 @@
-import {
-  ArrowUpRight,
-  LayoutTemplate,
-  MapPin,
-  MessageCircle,
-  MessagesSquare,
-  Search,
-  Share2,
-  Video,
-} from 'lucide-react'
+import { ArrowUpRight, LayoutTemplate } from 'lucide-react'
 import Section, { Glow } from './ui/Section.jsx'
 import Eyebrow from './ui/Eyebrow.jsx'
 import Reveal from './ui/Reveal.jsx'
+import {
+  GoogleAdsMark,
+  GoogleMapsMark,
+  InstagramMark,
+  MetaMark,
+  TikTokMark,
+  WhatsAppMark,
+} from './ui/BrandMarks.jsx'
 import { services, whatsappThread } from '../data/site.js'
 
+/**
+ * Each platform service carries its real mark and its brand hue, which the
+ * icon well picks up on hover. Website development is not a platform, so it
+ * keeps a neutral glyph in the site's own accent.
+ */
 const icons = {
-  whatsapp: MessageCircle,
-  meta: Share2,
-  search: Search,
-  video: Video,
-  social: MessagesSquare,
-  pin: MapPin,
-  web: LayoutTemplate,
+  whatsapp: { Mark: WhatsAppMark, brand: '#25D366' },
+  meta: { Mark: MetaMark, brand: '#0866FF' },
+  search: { Mark: GoogleAdsMark, brand: '#4285F4' },
+  video: { Mark: TikTokMark, brand: '#FFFFFF' },
+  social: { Mark: InstagramMark, brand: '#FF0069' },
+  pin: { Mark: GoogleMapsMark, brand: '#34A853' },
+  web: {
+    Mark: ({ className }) => (
+      <LayoutTemplate strokeWidth={1.5} className={className} aria-hidden="true" />
+    ),
+    brand: '#4ee2ac',
+  },
 }
 
 /* Bento placement. Everything else falls through as a single cell. */
@@ -39,17 +48,27 @@ function Chip({ children }) {
 }
 
 function ServiceCard({ service, index }) {
-  const Icon = icons[service.icon]
+  const { Mark, brand } = icons[service.icon]
   const isHero = service.size === 'lg'
   const isWide = service.size === 'wide'
 
   const iconWell = (
     <span
-      className={`flex shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/[0.05] text-text transition-all duration-500 ease-out-quint group-hover:border-jade-400/40 group-hover:bg-jade-500/15 group-hover:text-jade-300 ${
+      style={{ '--brand': brand }}
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/10 bg-white/[0.05] text-jade-300 transition-all duration-500 ease-out-quint group-hover:border-[color-mix(in_oklab,var(--brand)_45%,transparent)] group-hover:bg-[color-mix(in_oklab,var(--brand)_14%,transparent)] ${
         isHero ? 'h-14 w-14' : 'h-11 w-11'
       }`}
     >
-      <Icon strokeWidth={1.5} className={isHero ? 'h-6 w-6' : 'h-5 w-5'} aria-hidden="true" />
+      {/* Brand coloured halo, revealed behind the mark on hover */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 scale-50 rounded-md bg-[radial-gradient(circle_at_center,var(--brand),transparent_70%)] opacity-0 blur-md transition-all duration-500 ease-out-quint group-hover:scale-100 group-hover:opacity-60"
+      />
+      <Mark
+        className={`relative transition-transform duration-500 ease-out-quint group-hover:scale-110 ${
+          isHero ? 'h-6 w-6' : 'h-5 w-5'
+        }`}
+      />
     </span>
   )
 

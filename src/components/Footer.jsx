@@ -74,6 +74,12 @@ export default function Footer() {
           </p>
           <span className="micro text-text-faint">{brand.tagline}</span>
         </div>
+
+        {/* Shown because the services cards carry platform logos. */}
+        <p className="mt-5 caption text-text-faint">
+          WhatsApp, Meta, Google, TikTok and Instagram are trademarks of their respective owners.
+          Adsmith is an independent agency and is not affiliated with or endorsed by any of them.
+        </p>
       </div>
     </footer>
   )
