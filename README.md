@@ -106,7 +106,7 @@ Almost all text lives in `src/data/site.js`. Adding a service is a new entry in
 
 The site is static plus one PHP file, which is exactly what shared hosting is good at.
 
-**1. Set up mail delivery first.** Enquiries land in `adsmithenquiries@gmail.com`, an
+**1. Set up mail delivery first.** Enquiries land in `adsmithsolutions@gmail.com`, an
 ordinary free Gmail inbox, so there is nothing to create there. There is one thing to create
 in cPanel though: under Email Accounts, add `noreply@adsmithsolutions.com`. It needs no
 inbox and nobody ever logs into it; it exists purely so the domain has a legitimate address
@@ -137,7 +137,7 @@ Status, and confirm `https://adsmithsolutions.com` loads. The `.htaccess` forces
 strips the `www.` prefix, so there is one canonical address.
 
 **5. Send yourself a test enquiry** through the live form and confirm it lands in the
-`enquiries@` inbox. Check the spam folder on the first one.
+`adsmithsolutions@gmail.com` inbox. Check the spam folder on the first one.
 
 ### If the form reports an error
 
@@ -162,7 +162,7 @@ instead. Build command `npm run build`, publish directory `dist`.
 
 The form posts to **`/contact.php`**, which ships in `public/`. It validates the submission,
 drops anything that trips the honeypot, guards against header injection, and emails the
-enquiry to `adsmithenquiries@gmail.com`. `Reply-To` is set to whoever filled the form in,
+enquiry to `adsmithsolutions@gmail.com`. `Reply-To` is set to whoever filled the form in,
 so replying goes straight back to them, not to the Gmail account.
 
 That address is a free Gmail inbox rather than a mailbox on the domain, which is cheaper but
@@ -202,7 +202,7 @@ Submissions arrive as JSON:
 Everything on the page is now real. These are the loose ends:
 
 - **The domain.** `adsmithsolutions.com` needs to exist and resolve before the site goes
-  live. Enquiries themselves go to `adsmithenquiries@gmail.com`, which already works; check
+  live. Enquiries themselves go to `adsmithsolutions@gmail.com`, which already works; check
   its Spam folder for the first few, per the note in Going Live above.
 - **The logo** in `ui/Wordmark.jsx` is redrawn as vector from a screenshot. If the original
   SVG turns up, swap it in for an exact match. `public/logo.svg` holds the blue version for

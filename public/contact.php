@@ -21,7 +21,7 @@
 declare(strict_types=1);
 
 /** Where enquiries are delivered. Free Gmail inbox, checked manually. */
-const TO_ADDRESS = 'adsmithenquiries@gmail.com';
+const TO_ADDRESS = 'adsmithsolutions@gmail.com';
 
 /**
  * The envelope sender. This has to be an address on the sending server's own
@@ -156,7 +156,13 @@ if (!$sent) {
     @file_put_contents(
         __DIR__ . '/.enquiries.log',
         gmdate('c') . ' ' . json_encode(
-            compact('name', 'email', 'company', 'service', 'message'),
+            [
+                'name' => $name,
+                'email' => $email,
+                'company' => $company,
+                'services' => $servicesList,
+                'message' => $message,
+            ],
             JSON_UNESCAPED_UNICODE
         ) . PHP_EOL,
         FILE_APPEND | LOCK_EX
