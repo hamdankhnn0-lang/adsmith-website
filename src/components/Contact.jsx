@@ -7,18 +7,17 @@ import Button from './ui/Button.jsx'
 import { brand, phones, services } from '../data/site.js'
 
 /**
- * Two ways an enquiry can reach us, in priority order.
+ * The form posts to contact.php, which ships in public/ and emails the enquiry.
+ * That works on any PHP host with no third party service. Point
+ * VITE_FORM_ENDPOINT somewhere else (Formspree, your own API) to override it.
  *
- * 1. VITE_FORM_ENDPOINT, if set: the form POSTs JSON to it (Formspree, or any
- *    endpoint of your own).
- * 2. Otherwise the form hands off to WhatsApp with every field already written
- *    into the message. No backend, no signup, and it lands where we actually
- *    reply fastest.
+ * If the post fails for any reason, the error state hands the visitor straight
+ * to WhatsApp and email with everything they typed still intact, so an enquiry
+ * is never simply lost.
  *
- * VITE_BOOKING_URL swaps the WhatsApp booking button for a real scheduler
- * (Cal.com, Calendly) once one exists.
+ * VITE_BOOKING_URL swaps the WhatsApp booking buttons for a real scheduler.
  */
-const FORM_ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT ?? ''
+const FORM_ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT || '/contact.php'
 const BOOKING_URL = import.meta.env.VITE_BOOKING_URL ?? ''
 
 /** Compose the enquiry as a readable WhatsApp message. */
@@ -88,20 +87,6 @@ function ContactForm() {
     setErrors(next)
     if (Object.keys(next).length > 0) return
 
-    // Silently accept the spam so the bot does not learn it was caught.
-    if (trap) {
-      setStatus('sent')
-      return
-    }
-
-    // WhatsApp handoff. Opened synchronously inside the click so the browser
-    // does not treat it as an unrequested popup.
-    if (!FORM_ENDPOINT) {
-      window.open(waLink(phones[0].wa, form), '_blank', 'noopener,noreferrer')
-      setStatus('sent')
-      return
-    }
-
     setStatus('sending')
     try {
       const res = await fetch(FORM_ENDPOINT, {
@@ -109,12 +94,23 @@ function ContactForm() {
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
           ...form,
+          website: trap,
           service: form.service || 'Not specified',
           submittedAt: new Date().toISOString(),
           page: window.location.href,
         }),
       })
+
+      // The server validates too. Put anything it rejects back on the field.
+      if (res.status === 422) {
+        const body = await res.json().catch(() => ({}))
+        setErrors(body.errors ?? {})
+        setStatus('idle')
+        return
+      }
+
       if (!res.ok) throw new Error(`Endpoint returned ${res.status}`)
+
       setStatus('sent')
       setForm(initialForm)
     } catch {
@@ -123,54 +119,40 @@ function ContactForm() {
   }
 
   if (status === 'sent') {
-    const viaWhatsApp = !FORM_ENDPOINT
     return (
       <div className="glass-strong flex min-h-[27rem] flex-col items-start justify-center rounded-lg p-8 sm:p-10">
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-jade-500 text-on-jade">
           <Check aria-hidden="true" strokeWidth={2.4} className="h-5 w-5" />
         </span>
 
-        <h3 className="mt-6 display-3 text-text">
-          {viaWhatsApp ? 'WhatsApp is open.' : 'Request received.'}
-        </h3>
+        <h3 className="mt-6 display-3 text-text">Request received.</h3>
 
         <p className="mt-3 max-w-[40ch] body-md text-text-mute">
-          {viaWhatsApp
-            ? 'Your details are already written into the message. Press send and we will reply from there, usually within the hour.'
-            : 'Thanks. We will come back within one business day with next steps and a few questions before the audit.'}
+          It is in our inbox. We will come back within one business day with next steps and a few
+          questions before the audit. If you would rather not wait, message us on WhatsApp.
         </p>
 
-        {viaWhatsApp && (
-          <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <a
-              href={waLink(phones[0].wa, form)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 body-md font-medium text-jade-300 underline underline-offset-4 transition-colors hover:text-text"
-            >
-              <MessageCircle aria-hidden="true" strokeWidth={1.8} className="h-4 w-4" />
-              Nothing opened? Try again
-            </a>
-            <a
-              href={`mailto:${brand.email}?subject=${encodeURIComponent('Enquiry from adsmithsolutions.com')}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`)}`}
-              className="inline-flex items-center gap-2 body-md text-text-mute underline underline-offset-4 transition-colors hover:text-text"
-            >
-              <Mail aria-hidden="true" strokeWidth={1.8} className="h-4 w-4" />
-              Send it by email instead
-            </a>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={() => {
-            setForm(initialForm)
-            setStatus('idle')
-          }}
-          className="mt-8 body-md font-medium text-text-mute underline underline-offset-4 transition-colors hover:text-text"
-        >
-          Start a new enquiry
-        </button>
+        <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <a
+            href={`https://wa.me/${phones[0].wa}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 body-md font-medium text-jade-300 underline underline-offset-4 transition-colors hover:text-text"
+          >
+            <MessageCircle aria-hidden="true" strokeWidth={1.8} className="h-4 w-4" />
+            Message us on WhatsApp
+          </a>
+          <button
+            type="button"
+            onClick={() => {
+              setForm(initialForm)
+              setStatus('idle')
+            }}
+            className="body-md text-text-mute underline underline-offset-4 transition-colors hover:text-text"
+          >
+            Send another enquiry
+          </button>
+        </div>
       </div>
     )
   }
@@ -279,27 +261,54 @@ function ContactForm() {
       </div>
 
       {status === 'error' && (
-        <p
+        <div
           role="alert"
-          className="mt-6 rounded-md border border-jade-400/30 bg-jade-500/10 px-4 py-3.5 body-md text-text"
+          className="mt-6 rounded-md border border-jade-400/30 bg-jade-500/10 px-4 py-4 body-md text-text"
         >
-          That did not send, because the form service did not respond. Try once more, or email us
-          directly at{' '}
-          <a href={`mailto:${brand.email}`} className="text-jade-300 underline underline-offset-4">
-            {brand.email}
-          </a>
-          .
-        </p>
+          <p>That did not send. Nothing you typed is lost, so send it either of these ways:</p>
+          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2">
+            <a
+              href={waLink(phones[0].wa, form)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 font-medium text-jade-300 underline underline-offset-4"
+            >
+              <MessageCircle aria-hidden="true" strokeWidth={1.8} className="h-4 w-4" />
+              Send it on WhatsApp
+            </a>
+            <a
+              href={`mailto:${brand.email}?subject=${encodeURIComponent('Enquiry from adsmithsolutions.com')}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\nBusiness: ${form.company}\n\n${form.message}`)}`}
+              className="inline-flex items-center gap-2 text-text-mute underline underline-offset-4 hover:text-text"
+            >
+              <Mail aria-hidden="true" strokeWidth={1.8} className="h-4 w-4" />
+              Send it by email
+            </a>
+          </div>
+        </div>
       )}
 
       <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Button as="button" type="submit" size="lg" withArrow disabled={status === 'sending'}>
+        <Button
+          as="button"
+          type="submit"
+          size="lg"
+          withArrow
+          disabled={status === 'sending'}
+          className="shrink-0 whitespace-nowrap"
+        >
           {status === 'sending' ? 'Sending…' : 'Request free audit'}
         </Button>
-        <p className="caption text-text-faint sm:max-w-[26ch]">
-          {FORM_ENDPOINT
-            ? 'No pitch decks. A written audit and a straight answer.'
-            : 'Opens WhatsApp with your details already filled in.'}
+        <p className="caption text-text-faint sm:max-w-[28ch]">
+          No pitch decks, just a written audit. Or{' '}
+          <a
+            href={waLink(phones[0].wa, form)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-jade-300 underline underline-offset-4 hover:text-text"
+          >
+            send it on WhatsApp
+          </a>
+          .
         </p>
       </div>
     </form>

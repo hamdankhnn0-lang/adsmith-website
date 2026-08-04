@@ -12,3 +12,6 @@ dist-ssr
 .idea
 .vscode/*
 !.vscode/extensions.json
+
+# Fallback log written by contact.php when mail fails
+public/.enquiries.log

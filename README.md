@@ -15,8 +15,8 @@ npm run build    # production bundle in dist/
 npm run preview  # serve the built bundle locally
 ```
 
-The build output in `dist/` is fully static — deploy it to Netlify, Vercel, Cloudflare
-Pages or any static host with no extra configuration.
+`dist/` holds everything that gets deployed: the static site, plus `contact.php` and
+`.htaccess`. See **Going live** below for the upload steps.
 
 ## Design system
 
@@ -83,9 +83,17 @@ src/
     Process.jsx           4 step timeline (horizontal on desktop, vertical on mobile)
     Testimonials.jsx      the PizzaBox quote and the real result figures
     Faq.jsx               3 item accordion
-    Contact.jsx           contact form with WhatsApp handoff, booking card
+    Contact.jsx           contact form posting to contact.php, booking card
     Footer.jsx            wordmark, nav columns, legal links
-    ui/                   Button, Section, Eyebrow, Reveal, Wordmark
+    ui/                   Button, Section, Eyebrow, Reveal, Wordmark, BrandMarks,
+                          ScrollProgress
+
+public/
+  contact.php             form endpoint: validates, blocks spam, emails the enquiry
+  .htaccess               https, canonical host, caching, security headers
+  privacy.html            standalone legal pages, no router needed
+  terms.html
+  logo.svg                blue lockup for print and social
 ```
 
 ### Editing copy
@@ -94,46 +102,78 @@ Almost all text lives in `src/data/site.js`. Adding a service is a new entry in
 `services` plus a Lucide icon in the `icons` map in `Services.jsx`; adding an industry is a new entry in
 `industries` — both sections render from the array.
 
-## Going live
+## Going live on HostBreak (or any cPanel host)
 
-The site is a static bundle, so any static host works and none of them need a server.
+The site is static plus one PHP file, which is exactly what shared hosting is good at.
 
-1. Push this branch to GitHub (already done).
-2. Create a project on **Netlify**, **Vercel** or **Cloudflare Pages** and point it at this
-   repo. Every host detects Vite automatically; if asked, the settings are:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-3. Add the `VITE_FORM_ENDPOINT` environment variable in the host's dashboard (see below).
-4. Attach your domain in the host's DNS settings, and the free HTTPS certificate is issued
-   for you.
+**1. Create the mailbox first.** In cPanel go to Email Accounts and create both:
 
-Deploys then happen on every push to the branch. To ship a build by hand instead, run
-`npm run build` and drag the `dist` folder onto Netlify Drop.
+- `enquiries@adsmithsolutions.com` — where enquiries are delivered
+- `website@adsmithsolutions.com` — the address the form sends *from*
+
+Without the first one, mail is delivered nowhere and you will never see an enquiry. Without
+the second, the host will likely reject the send as spoofing.
+
+**2. Build.**
+
+```bash
+npm install
+npm run build
+```
+
+**3. Upload.** Put the *contents* of `dist/` into `public_html`, not the folder itself. That
+includes `.htaccess` and `contact.php`, both of which are easy to miss because File Manager
+hides dotfiles until you enable "Show Hidden Files" in its settings.
+
+**4. Point the domain.** The nameservers are already set to HostBreak's, so the domain should
+resolve once it propagates. Then issue the free SSL certificate in cPanel under SSL/TLS
+Status, and confirm `https://adsmithsolutions.com` loads. The `.htaccess` forces https and
+strips the `www.` prefix, so there is one canonical address.
+
+**5. Send yourself a test enquiry** through the live form and confirm it lands in the
+`enquiries@` inbox. Check the spam folder on the first one.
+
+### If the form reports an error
+
+`contact.php` writes any enquiry it could not email to `.enquiries.log` next to itself, so
+nothing is lost while mail is being sorted out. `.htaccess` blocks that file from the web.
+Read it over FTP or File Manager. The usual causes are the mailbox not existing yet, or the
+host requiring SMTP authentication rather than `mail()`.
+
+### Redeploying
+
+Run `npm run build` again and re-upload the contents of `dist/`. Asset filenames are
+fingerprinted and `.htaccess` tells browsers never to cache the HTML, so visitors pick up a
+new build immediately rather than seeing a stale page.
+
+### Other hosts
+
+Netlify, Vercel and Cloudflare Pages all work too, but none of them run PHP. On those, set
+`VITE_FORM_ENDPOINT` to a form service (Formspree or similar) and the form posts there
+instead. Build command `npm run build`, publish directory `dist`.
 
 ## Where enquiries land
 
-The contact form and the booking card both work out of the box, with no backend
-and no third party account.
+The form posts to **`/contact.php`**, which ships in `public/`. It validates the submission,
+drops anything that trips the honeypot, guards against header injection, and emails the
+enquiry to the address at the top of that file. `Reply-To` is set to whoever filled the form
+in, so replying goes straight back to them.
 
-**By default the form hands off to WhatsApp.** On submit it opens a chat to the
-first number in `phones` (see `src/data/site.js`) with the name, email, business,
-chosen service and message already written into the draft. The visitor presses
-send. The success panel also offers a retry link and an email fallback in case
-the handoff is blocked.
+Change the recipient by editing `TO_ADDRESS` in `public/contact.php`.
 
-**The booking card** offers both WhatsApp numbers with a prefilled booking
-message, plus an email link.
+**When the post fails**, the form does not simply give up. The error panel keeps everything
+typed and offers two working routes out: a WhatsApp link with the whole enquiry already
+composed, and a `mailto:` with the same. There is also a permanent "send it on WhatsApp"
+link beside the submit button for anyone who prefers it.
 
-Two optional environment variables change that behaviour. Copy `.env.example`
-to `.env` for local work and set the same values in your host's dashboard for
-production.
+Two optional environment variables. Copy `.env.example` to `.env` for local work.
 
 | Variable | Effect when set |
 | --- | --- |
-| `VITE_FORM_ENDPOINT` | The form POSTs JSON to this URL instead of opening WhatsApp. Works with Formspree or any endpoint of your own. |
+| `VITE_FORM_ENDPOINT` | Post somewhere other than `/contact.php`. Needed on hosts without PHP. |
 | `VITE_BOOKING_URL` | The booking card shows a single "See available times" button pointing at your Cal.com or Calendly page. |
 
-With `VITE_FORM_ENDPOINT` set, each submission arrives as JSON:
+Submissions arrive as JSON:
 
 ```json
 {
@@ -141,14 +181,11 @@ With `VITE_FORM_ENDPOINT` set, each submission arrives as JSON:
   "email": "ahmed@karachibistro.pk",
   "company": "Karachi Bistro",
   "service": "WhatsApp AI Agent",
-  "message": "Two branches, we want WhatsApp ordering and ads.",
-  "submittedAt": "2026-08-03T09:14:22.410Z",
+  "message": "Two branches in Peshawar, we want WhatsApp ordering and ads.",
+  "submittedAt": "2026-08-04T07:21:16.925Z",
   "page": "https://adsmithsolutions.com/"
 }
 ```
-
-The form carries a hidden honeypot field. Bots fill it, real people never see
-it, and those submissions are dropped without reaching WhatsApp or your endpoint.
 
 ## Still outstanding before launch
 
