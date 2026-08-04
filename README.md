@@ -190,7 +190,7 @@ Submissions arrive as JSON:
   "name": "Ahmed Khan",
   "email": "ahmed@karachibistro.pk",
   "company": "Karachi Bistro",
-  "service": "WhatsApp AI Agent",
+  "services": ["WhatsApp AI Agent", "Meta Ads"],
   "message": "Two branches in Peshawar, we want WhatsApp ordering and ads.",
   "submittedAt": "2026-08-04T07:21:16.925Z",
   "page": "https://adsmithsolutions.com/"

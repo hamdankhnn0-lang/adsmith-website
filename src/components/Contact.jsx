@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Check, Mail, MessageCircle } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Check, ChevronDown, Mail, MessageCircle } from 'lucide-react'
 import Section, { Glow } from './ui/Section.jsx'
 import Eyebrow from './ui/Eyebrow.jsx'
 import Reveal from './ui/Reveal.jsx'
@@ -28,7 +28,7 @@ function waLink(number, form) {
     `Name: ${form.name}`,
     `Email: ${form.email}`,
     form.company ? `Business: ${form.company}` : null,
-    `Interested in: ${form.service || 'Not sure yet'}`,
+    `Interested in: ${form.services.length ? form.services.join(', ') : 'Not sure yet'}`,
     '',
     form.message,
     // Keep the empty strings above: they are the blank lines that make the
@@ -40,10 +40,7 @@ function waLink(number, form) {
 const fieldBase =
   'w-full rounded-md border border-white/10 bg-white/[0.04] px-4 py-3 body-md text-text placeholder:text-text-faint transition-colors duration-300 focus:border-jade-400/60 focus:bg-white/[0.07] focus:outline-none'
 
-const chevron =
-  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'><path d='M2.5 4.5 6 8l3.5-3.5' stroke='%239bb0aa' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/></svg>\")"
-
-const initialForm = { name: '', email: '', company: '', service: '', message: '' }
+const initialForm = { name: '', email: '', company: '', services: [], message: '' }
 
 function Field({ label, htmlFor, error, children }) {
   return (
@@ -56,6 +53,104 @@ function Field({ label, htmlFor, error, children }) {
         <p role="alert" className="mt-2 caption text-jade-300">
           {error}
         </p>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Multi-select for the services list. A native `<select multiple>` needs a
+ * held-down Ctrl or Cmd to pick more than one option, which almost nobody
+ * discovers on their own, so this is a checkbox list behind a summary button
+ * instead. Closes on an outside click or Escape.
+ */
+function ServiceMultiSelect({ id, value, onChange }) {
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef(null)
+
+  useEffect(() => {
+    if (!open) return undefined
+
+    const onPointerDown = (e) => {
+      if (rootRef.current && !rootRef.current.contains(e.target)) setOpen(false)
+    }
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [open])
+
+  const toggle = (name) => {
+    onChange(value.includes(name) ? value.filter((v) => v !== name) : [...value, name])
+  }
+
+  const label =
+    value.length === 0
+      ? 'Select services'
+      : value.length === 1
+        ? value[0]
+        : `${value.length} services selected`
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        id={id}
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={`${fieldBase} flex items-center justify-between gap-2 text-left ${
+          value.length === 0 ? 'text-text-faint' : 'text-text'
+        }`}
+      >
+        <span className="truncate">{label}</span>
+        <ChevronDown
+          aria-hidden="true"
+          strokeWidth={1.6}
+          className={`h-4 w-4 shrink-0 text-text-faint transition-transform duration-300 ease-out-quint ${
+            open ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+
+      {open && (
+        <ul
+          role="listbox"
+          aria-multiselectable="true"
+          aria-labelledby={id}
+          className="glass-strong absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-md p-1.5 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)]"
+        >
+          {services.map((s) => {
+            const checked = value.includes(s.name)
+            return (
+              <li key={s.id}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={checked}
+                  onClick={() => toggle(s.name)}
+                  className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-left body-md text-text transition-colors duration-200 hover:bg-white/[0.07]"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border transition-colors duration-200 ${
+                      checked ? 'border-jade-400 bg-jade-500' : 'border-white/20'
+                    }`}
+                  >
+                    {checked && <Check strokeWidth={3} className="h-3 w-3 text-on-jade" />}
+                  </span>
+                  {s.name}
+                </button>
+              </li>
+            )
+          })}
+        </ul>
       )}
     </div>
   )
@@ -95,7 +190,7 @@ function ContactForm() {
         body: JSON.stringify({
           ...form,
           website: trap,
-          service: form.service || 'Not specified',
+          services: form.services.length ? form.services : ['Not specified'],
           submittedAt: new Date().toISOString(),
           page: window.location.href,
         }),
@@ -203,32 +298,12 @@ function ContactForm() {
           />
         </Field>
 
-        <Field label="Primary interest" htmlFor="service">
-          <select
-            id="service"
-            name="service"
-            value={form.service}
-            onChange={update('service')}
-            className={`${fieldBase} appearance-none pr-10`}
-            style={{
-              backgroundImage: chevron,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 1rem center',
-              backgroundSize: '12px 12px',
-            }}
-          >
-            <option value="" className="bg-ground-2">
-              Select a service
-            </option>
-            {services.map((s) => (
-              <option key={s.id} value={s.name} className="bg-ground-2">
-                {s.name}
-              </option>
-            ))}
-            <option value="Not sure yet" className="bg-ground-2">
-              Not sure yet
-            </option>
-          </select>
+        <Field label="Services you need" htmlFor="services-trigger">
+          <ServiceMultiSelect
+            id="services-trigger"
+            value={form.services}
+            onChange={(next) => setForm((f) => ({ ...f, services: next }))}
+          />
         </Field>
       </div>
 
@@ -277,7 +352,7 @@ function ContactForm() {
               Send it on WhatsApp
             </a>
             <a
-              href={`mailto:${brand.email}?subject=${encodeURIComponent('Enquiry from adsmithsolutions.com')}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\nBusiness: ${form.company}\n\n${form.message}`)}`}
+              href={`mailto:${brand.email}?subject=${encodeURIComponent('Enquiry from adsmithsolutions.com')}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\nBusiness: ${form.company}\nServices: ${form.services.length ? form.services.join(', ') : 'Not sure yet'}\n\n${form.message}`)}`}
               className="inline-flex items-center gap-2 text-text-mute underline underline-offset-4 hover:text-text"
             >
               <Mail aria-hidden="true" strokeWidth={1.8} className="h-4 w-4" />

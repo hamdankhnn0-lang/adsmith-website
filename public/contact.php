@@ -72,9 +72,20 @@ $field = static fn(string $key): string => trim((string) ($data[$key] ?? ''));
 $name = $field('name');
 $email = $field('email');
 $company = $field('company');
-$service = $field('service');
 $message = $field('message');
 $trap = $field('website');
+
+// Services is a list now, not a single value, so it needs its own handling:
+// $field() only copes with strings. Anything that is not already an array
+// (missing, or a lone string from a non-JS fallback) becomes a one-item list.
+$servicesRaw = $data['services'] ?? [];
+if (!is_array($servicesRaw)) {
+    $servicesRaw = $servicesRaw === '' ? [] : [$servicesRaw];
+}
+$servicesList = array_values(array_filter(
+    array_map(static fn($s): string => trim((string) $s), $servicesRaw),
+    static fn(string $s): bool => $s !== ''
+));
 
 // Bots fill the hidden field. Accept it so they do not learn they were caught,
 // then drop it on the floor.
@@ -102,6 +113,8 @@ $clean = static fn(string $value): string => str_replace(["\r", "\n", "%0a", "%0
 
 $safeName = $clean($name);
 $safeEmail = $clean($email);
+$safeServices = array_map($clean, $servicesList);
+$servicesLine = $safeServices !== [] ? implode(', ', $safeServices) : 'Not specified';
 
 $lines = [
     'New enquiry from the website',
@@ -109,7 +122,7 @@ $lines = [
     'Name:      ' . $safeName,
     'Email:     ' . $safeEmail,
     'Business:  ' . ($company !== '' ? $clean($company) : 'Not given'),
-    'Interest:  ' . ($service !== '' ? $clean($service) : 'Not specified'),
+    'Interest:  ' . $servicesLine,
     'Received:  ' . gmdate('D, d M Y H:i') . ' UTC',
     'IP:        ' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'),
     '',
