@@ -203,9 +203,39 @@ end, not a way to run it: enquiries pass through somebody else's server, and
 the address sits in the built JavaScript for anyone to read. Build without
 those two variables for the copy that gets uploaded.
 
+Opening that build off disk is not enough on its own, though. FormSubmit reads
+the address a submission came from and rejects `file://` outright, so the page
+has to be served over http from somewhere. Which is what `docs/` is for.
+
 **A caveat worth stating.** The response shapes for the hosted form services
 are taken from their documentation rather than seen working: the network here
 cannot reach them. `contact.php` is the path that has been tested end to end.
+
+### `docs/` is the staging copy on GitHub Pages
+
+A built snapshot pointing at FormSubmit, so the form can be tried before the
+domain and the hosting exist. Turn it on under Settings, Pages: deploy from a
+branch, pick this branch and the `/docs` folder. It lands on
+`https://hamdankhnn0-lang.github.io/adsmith-website/`.
+
+It is built with `--base=./` because Pages serves it from a subfolder rather
+than a domain root, so absolute asset paths would 404. `contact.php` and
+`.htaccess` are deliberately left out: neither does anything on Pages, and the
+first would be served as readable source. `robots.txt` there disallows
+everything so the staging copy never competes with the real domain in search.
+The two legal page links point at the domain root and will not resolve on the
+Pages address, which is expected and matters only there.
+
+Rebuild it after changing the site:
+
+```bash
+VITE_FORM_MODE=native \
+VITE_FORM_ENDPOINT=https://formsubmit.co/adsmithsolutions@gmail.com \
+  npx vite build --base=./ --outDir docs
+```
+
+Retire the whole folder once the real hosting is live. It is a way to try the
+site, not a second place to run it.
 
 Submissions arrive as JSON:
 
