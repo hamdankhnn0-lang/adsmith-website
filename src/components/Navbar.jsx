@@ -154,7 +154,7 @@ export default function Navbar() {
           }`}
         />
         <div
-          className={`absolute inset-x-3 top-3 rounded-xl border border-white/10 bg-ground-2 px-5 pb-6 pt-24 transition-all duration-500 ease-out-quint sm:inset-x-5 ${
+          className={`sheet absolute inset-x-3 top-3 rounded-xl px-5 pb-6 pt-24 transition-all duration-500 ease-out-quint sm:inset-x-5 ${
             open ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
           }`}
         >

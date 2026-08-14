@@ -118,7 +118,7 @@ function ConversationMockup() {
       </div>
 
       {/* Floating stat, the second layer of the composite */}
-      <div className="glass-strong absolute -bottom-8 left-0 rounded-md px-4 py-3 shadow-[0_24px_60px_-30px_rgba(0,0,0,1)] sm:-left-12">
+      <div className="sheet absolute -bottom-8 left-0 rounded-md px-4 py-3 shadow-[0_24px_60px_-30px_rgba(0,0,0,1)] sm:-left-12">
         <span className="block font-display text-[1.35rem] font-semibold tabular-nums text-text">
           4s
         </span>

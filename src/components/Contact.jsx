@@ -124,7 +124,7 @@ function ServiceMultiSelect({ id, value, onChange }) {
           role="listbox"
           aria-multiselectable="true"
           aria-labelledby={id}
-          className="glass-strong absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-md p-1.5 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)]"
+          className="sheet absolute z-30 mt-2 max-h-[min(24rem,60vh)] w-full overflow-auto rounded-md p-1.5 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.95)]"
         >
           {services.map((s) => {
             const checked = value.includes(s.name)
@@ -135,7 +135,7 @@ function ServiceMultiSelect({ id, value, onChange }) {
                   role="option"
                   aria-selected={checked}
                   onClick={() => toggle(s.name)}
-                  className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-left body-md text-text transition-colors duration-200 hover:bg-white/[0.07]"
+                  className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-left leading-snug body-md text-text transition-colors duration-200 hover:bg-white/[0.09]"
                 >
                   <span
                     aria-hidden="true"
@@ -162,6 +162,18 @@ function ContactForm() {
   const [status, setStatus] = useState('idle') // idle | sending | sent | error
   // Bots fill hidden inputs; humans never see this one.
   const [trap, setTrap] = useState('')
+  const alertRef = useRef(null)
+
+  /**
+   * Bring the failure notice to the visitor rather than hoping they scroll to
+   * it. Submit sits at the bottom of a long form, so the notice can open above
+   * the fold and read as nothing having happened at all.
+   */
+  useEffect(() => {
+    if (status !== 'error' || !alertRef.current) return
+    alertRef.current.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    alertRef.current.focus({ preventScroll: true })
+  }, [status])
 
   const update = (key) => (e) => {
     setForm((f) => ({ ...f, [key]: e.target.value }))
@@ -196,15 +208,33 @@ function ContactForm() {
         }),
       })
 
+      /**
+       * Only ever call it sent when contact.php says so in as many words.
+       *
+       * A 200 is not enough on its own. Put this build somewhere PHP does not
+       * run and the server hands back the source of the file, or its own error
+       * page, with a perfectly cheerful 200 attached. Trusting the status code
+       * meant telling people their enquiry was in our inbox when nothing had
+       * been sent at all, which is the worst way this form can fail: they walk
+       * away happy and we never hear from them.
+       */
+      const raw = await res.text()
+      let body = null
+      try {
+        body = JSON.parse(raw)
+      } catch {
+        body = null // not our endpoint answering
+      }
+
       // The server validates too. Put anything it rejects back on the field.
-      if (res.status === 422) {
-        const body = await res.json().catch(() => ({}))
-        setErrors(body.errors ?? {})
+      if (res.status === 422 && body?.errors) {
+        setErrors(body.errors)
         setStatus('idle')
         return
       }
 
       if (!res.ok) throw new Error(`Endpoint returned ${res.status}`)
+      if (body?.ok !== true) throw new Error('Endpoint did not confirm the send')
 
       setStatus('sent')
       setForm(initialForm)
@@ -338,7 +368,9 @@ function ContactForm() {
       {status === 'error' && (
         <div
           role="alert"
-          className="mt-6 rounded-md border border-jade-400/30 bg-jade-500/10 px-4 py-4 body-md text-text"
+          ref={alertRef}
+          tabIndex={-1}
+          className="mt-6 rounded-md border border-jade-400/30 bg-jade-500/10 px-4 py-4 body-md text-text focus:outline-none"
         >
           <p>That did not send. Nothing you typed is lost, so send it either of these ways:</p>
           <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2">

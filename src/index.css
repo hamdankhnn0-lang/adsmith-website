@@ -269,9 +269,24 @@
 }
 
 /**
- * The frosted treatment, kept for the two places the page scrolls underneath:
- * the navbar capsule and the mobile menu. Here the blur is doing real work,
- * and the grey text tradeoff buys something visible.
+ * Anything that opens on top of the page: the services dropdown, the menu
+ * sheet, floating badges.
+ *
+ * Fully opaque, and it has to be. A translucent tint works for a panel that
+ * sits in the flow, because the only thing behind it is the page ground. Open
+ * one over a form and the fields underneath read straight through it, which
+ * is illegible. The value below is where the old frosted dropdown landed once
+ * its blur had done its work, so this looks like what it replaces.
+ */
+@utility sheet {
+  background-color: #202b2e;
+  border: 1px solid rgb(255 255 255 / 0.14);
+}
+
+/**
+ * The frosted treatment, kept for the one place the page scrolls underneath:
+ * the navbar capsule. Here the blur is doing real work, and the grey text
+ * tradeoff buys something visible.
  */
 @utility glass-float {
   background-color: rgb(10 19 21 / 0.72);
