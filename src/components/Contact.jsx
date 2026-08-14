@@ -36,6 +36,18 @@ const BOOKING_URL = import.meta.env.VITE_BOOKING_URL ?? ''
  */
 const FORM_MODE = import.meta.env.VITE_FORM_MODE === 'native' ? 'native' : 'ajax'
 
+/**
+ * Access key for a form service that uses one, Web3Forms being the common
+ * case. Its presence also decides which spelling of the extra settings to
+ * send, since the services disagree: Web3Forms reads `subject`, FormSubmit
+ * reads `_subject` and ignores anything it does not know.
+ *
+ * This is not a secret. It says where enquiries go, and anyone can read it in
+ * the built JavaScript, which is exactly why the real site does not use one:
+ * contact.php lives on the domain and needs no key at all.
+ */
+const FORM_KEY = import.meta.env.VITE_FORM_KEY ?? ''
+
 /** Compose the enquiry as a readable WhatsApp message. */
 function waLink(number, form) {
   const lines = [
@@ -228,6 +240,9 @@ function ContactForm() {
           services: form.services.length ? form.services : ['Not specified'],
           submittedAt: new Date().toISOString(),
           page: window.location.href,
+          // Only present when a form service that wants one is configured.
+          // contact.php has no use for it and ignores what it does not read.
+          ...(FORM_KEY ? { access_key: FORM_KEY } : {}),
         }),
       })
 
@@ -327,9 +342,19 @@ function ContactForm() {
       {FORM_MODE === 'native' && (
         <>
           <input type="hidden" name="services" value={form.services.join(', ')} />
-          <input type="hidden" name="_subject" value={`[Adsmith] Enquiry from ${form.name}`} />
-          <input type="hidden" name="_template" value="table" />
-          <input type="hidden" name="_captcha" value="false" />
+          {FORM_KEY ? (
+            <>
+              <input type="hidden" name="access_key" value={FORM_KEY} />
+              <input type="hidden" name="subject" value={`[Adsmith] Enquiry from ${form.name}`} />
+              <input type="hidden" name="from_name" value="Adsmith website" />
+            </>
+          ) : (
+            <>
+              <input type="hidden" name="_subject" value={`[Adsmith] Enquiry from ${form.name}`} />
+              <input type="hidden" name="_template" value="table" />
+              <input type="hidden" name="_captcha" value="false" />
+            </>
+          )}
         </>
       )}
 

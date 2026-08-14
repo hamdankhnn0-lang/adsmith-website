@@ -182,6 +182,7 @@ Two optional environment variables. Copy `.env.example` to `.env` for local work
 | --- | --- |
 | `VITE_FORM_ENDPOINT` | Post somewhere other than `/contact.php`. Needed on hosts without PHP. |
 | `VITE_FORM_MODE` | `native` makes the browser submit the form and navigate, rather than posting in the background. See below. |
+| `VITE_FORM_KEY` | Access key for a form service that uses one. Also switches the extra fields to the spelling Web3Forms reads rather than FormSubmit's. |
 | `VITE_BOOKING_URL` | The booking card shows a single "See available times" button pointing at your Cal.com or Calendly page. |
 
 ### Trying the form before there is any hosting
@@ -236,6 +237,20 @@ VITE_FORM_ENDPOINT=https://formsubmit.co/adsmithsolutions@gmail.com \
 
 Retire the whole folder once the real hosting is live. It is a way to try the
 site, not a second place to run it.
+
+**If FormSubmit's activation will not take.** It emails a single use link, and
+a fresh submission replaces the previous token, so an older email's link
+answers "confirmation token not found". Submit once, then open the newest
+email. Gmail can also consume a single use link while scanning it, which no
+amount of clicking fixes. Web3Forms avoids the whole mechanism by handing you
+a reusable key instead:
+
+```bash
+VITE_FORM_MODE=native \
+VITE_FORM_KEY=the-key-they-email-you \
+VITE_FORM_ENDPOINT=https://api.web3forms.com/submit \
+  npx vite build --base=./ --outDir docs
+```
 
 Submissions arrive as JSON:
 
