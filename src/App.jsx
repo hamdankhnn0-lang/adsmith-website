@@ -1,0 +1,35 @@
+import ScrollProgress from './components/ui/ScrollProgress.jsx'
+import Navbar from './components/Navbar.jsx'
+import Hero from './components/Hero.jsx'
+import ClientStrip from './components/ClientStrip.jsx'
+import Services from './components/Services.jsx'
+import WhatsAppAgent from './components/WhatsAppAgent.jsx'
+import Industries from './components/Industries.jsx'
+import WhyAdsmith from './components/WhyAdsmith.jsx'
+import Process from './components/Process.jsx'
+import Testimonials from './components/Testimonials.jsx'
+import Faq from './components/Faq.jsx'
+import Contact from './components/Contact.jsx'
+import Footer from './components/Footer.jsx'
+
+export default function App() {
+  return (
+    <>
+      <ScrollProgress />
+      <Navbar />
+      <main id="main" tabIndex={-1} className="focus:outline-none">
+        <Hero />
+        <ClientStrip />
+        <Services />
+        <WhatsAppAgent />
+        <Industries />
+        <WhyAdsmith />
+        <Process />
+        <Testimonials />
+        <Faq />
+        <Contact />
+      </main>
+      <Footer />
+    </>
+  )
+}

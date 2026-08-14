@@ -1,0 +1,400 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+   Adsmith design tokens
+
+   A deep teal ink ground rather than black, so glass panels and the
+   jade primary sit in the same temperature family. Warm sand carries
+   the editorial accents and keeps the palette from reading as the
+   usual dark-plus-one-neon scheme.
+------------------------------------------------------------------- */
+@theme {
+  --color-ground: #0a1315;
+  --color-ground-2: #0e1b1e;
+  --color-ground-3: #132528;
+
+  --color-jade-200: #b6f7dd;
+  --color-jade-300: #7ff0c6;
+  --color-jade-400: #4ee2ac;
+  --color-jade-500: #2fcf96;
+  --color-jade-600: #1fa97a;
+  --color-jade-900: #0d3b2c;
+
+  --color-sand: #eaddc6;
+  --color-sand-dim: #c9bda8;
+
+  --color-text: #f2f6f4;
+  --color-text-mute: #9bb0aa;
+  /* Light enough to clear 4.5:1 on the lightest glass panel, not just on the
+     base ground. Anything darker fails WCAG AA on frosted surfaces. */
+  --color-text-faint: #8a9d98;
+  --color-on-jade: #04211a;
+
+  --font-display: 'Bricolage Grotesque', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 26px;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-marquee: marquee 46s linear infinite;
+  --animate-float: float 9s ease-in-out infinite;
+  --animate-breathe: breathe 7s ease-in-out infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes shine {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(320%) skewX(-18deg);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.7em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes grow-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-ground);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-synthesis-weight: none;
+  }
+
+  /**
+   * Grey antialiasing only where it costs nothing.
+   *
+   * Forcing it everywhere is the usual habit, and it wrecks text on ordinary
+   * Windows and Linux screens: it switches off subpixel rendering, which is
+   * the thing that makes edges look sharper than the pixel grid should allow.
+   * Light copy on a dark ground shows the damage worst of all, and this site
+   * is exactly that. On screens dense enough that subpixel rendering buys
+   * nothing, grey is the nicer of the two, so it stays there and nowhere else.
+   */
+  @media (min-resolution: 2dppx) {
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background-color: var(--color-jade-500);
+    color: var(--color-on-jade);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-jade-400);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+/* ------------------------------------------------------------- type tier */
+
+@utility display-1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 6.2vw, 4.75rem);
+  font-weight: 600;
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+}
+
+@utility display-2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.1rem, 4.4vw, 3.35rem);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+}
+
+@utility display-3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+@utility title-md {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+@utility body-lg {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+@utility body-md {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+@utility caption {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+@utility micro {
+  font-size: 0.75rem;
+  line-height: 1.45;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------- surface system */
+
+/**
+ * Panel surfaces.
+ *
+ * These carry no backdrop blur, and that is deliberate. A blurred backdrop
+ * forces the browser to composite the panel on its own layer, and text on
+ * such a layer loses subpixel rendering: Windows in particular then paints
+ * every letter in flat grey and the copy goes soft. Nearly every word on this
+ * site sits on one of these panels, so the cost was the whole page.
+ *
+ * Almost nothing was bought with it either. Blur only shows when there is
+ * something behind worth smearing, and behind these panels is a near flat
+ * dark ground. The tints below are raised a touch to stand in for the
+ * saturate() that went with the blur, and the panels land within a shade of
+ * where they were. Use glass-float instead where content really does travel
+ * underneath.
+ */
+@utility glass {
+  background-color: rgb(255 255 255 / 0.05);
+  border: 1px solid rgb(255 255 255 / 0.09);
+}
+
+@utility glass-strong {
+  background-color: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.14);
+}
+
+/**
+ * Anything that opens on top of the page: the services dropdown, the menu
+ * sheet, floating badges.
+ *
+ * Fully opaque, and it has to be. A translucent tint works for a panel that
+ * sits in the flow, because the only thing behind it is the page ground. Open
+ * one over a form and the fields underneath read straight through it, which
+ * is illegible. The value below is where the old frosted dropdown landed once
+ * its blur had done its work, so this looks like what it replaces.
+ */
+@utility sheet {
+  background-color: #202b2e;
+  border: 1px solid rgb(255 255 255 / 0.14);
+}
+
+/**
+ * The frosted treatment, kept for the one place the page scrolls underneath:
+ * the navbar capsule. Here the blur is doing real work, and the grey text
+ * tradeoff buys something visible.
+ */
+@utility glass-float {
+  background-color: rgb(10 19 21 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.09);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+/** A hairline that catches light along the top edge, like brushed metal. */
+@utility edge-light {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+
+/** 1px gradient ring drawn with two masks so only the border paints. */
+@utility ring-gradient {
+  padding: 1px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+/* ------------------------------------------------------------- animation */
+
+/**
+ * Scroll reveal. Elements start shifted and settle when `data-visible` is
+ * set by the reveal observer. Staggering is driven by --reveal-delay so a
+ * whole group animates from one observer callback.
+ */
+@utility reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s var(--ease-out-quint),
+    transform 0.7s var(--ease-out-quint);
+  transition-delay: var(--reveal-delay, 0ms);
+
+  &[data-visible='true'] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/**
+ * Headline words rise in one after another. The wrapper clips so each word
+ * appears to lift out of the line rather than fade on the spot.
+ */
+@utility word-rise {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* Room for descenders and commas, which a plain overflow clip would cut. */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+
+  & > span {
+    display: inline-block;
+    animation: rise-in 0.9s var(--ease-out-quint) both;
+    animation-delay: var(--word-delay, 0ms);
+  }
+}
+
+/** Bars that draw themselves out from the left when they come into view. */
+@utility bar-grow {
+  transform-origin: left;
+  animation: grow-bar 1.1s var(--ease-out-quint) both;
+  animation-delay: var(--bar-delay, 0ms);
+}
+
+/** A light sweep that crosses a button once on hover. */
+@utility sheen {
+  position: relative;
+  overflow: hidden;
+
+  & > .sheen-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  &:hover > .sheen-layer {
+    opacity: 1;
+    animation: shine 0.9s var(--ease-out-quint);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word-rise > span,
+  .bar-grow {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .sheen:hover > .sheen-layer {
+    animation: none;
+    opacity: 0;
+  }
+}
