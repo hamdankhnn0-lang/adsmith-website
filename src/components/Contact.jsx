@@ -20,6 +20,22 @@ import { brand, phones, services } from '../data/site.js'
 const FORM_ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT || '/contact.php'
 const BOOKING_URL = import.meta.env.VITE_BOOKING_URL ?? ''
 
+/**
+ * How the form reaches the endpoint.
+ *
+ * 'ajax', the default, posts JSON in the background and keeps the visitor on
+ * the page. It needs the endpoint to permit a cross origin request, which our
+ * own contact.php does by being on the same domain.
+ *
+ * 'native' submits the form the way HTML did before JavaScript, letting the
+ * browser navigate to the endpoint. It is slower and uglier, and it is the
+ * only thing that works from a file opened off disk or against a form service
+ * that does not answer preflight requests. Set VITE_FORM_MODE=native together
+ * with VITE_FORM_ENDPOINT to build a copy that can be tested before there is
+ * any hosting to test it on.
+ */
+const FORM_MODE = import.meta.env.VITE_FORM_MODE === 'native' ? 'native' : 'ajax'
+
 /** Compose the enquiry as a readable WhatsApp message. */
 function waLink(number, form) {
   const lines = [
@@ -181,9 +197,6 @@ function ContactForm() {
   }
 
   const submit = async (e) => {
-    e.preventDefault()
-    if (status === 'sending') return
-
     const next = {}
     if (!form.name.trim()) next.name = 'Please tell us your name.'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim()))
@@ -192,6 +205,16 @@ function ContactForm() {
       next.message = 'A sentence or two about your goals helps us prepare.'
 
     setErrors(next)
+
+    // Native mode hands the browser the form and steps out of the way, so the
+    // only job left here is to stop a submission the fields already fail.
+    if (FORM_MODE === 'native') {
+      if (Object.keys(next).length > 0) e.preventDefault()
+      return
+    }
+
+    e.preventDefault()
+    if (status === 'sending') return
     if (Object.keys(next).length > 0) return
 
     setStatus('sending')
@@ -234,7 +257,13 @@ function ContactForm() {
       }
 
       if (!res.ok) throw new Error(`Endpoint returned ${res.status}`)
-      if (body?.ok !== true) throw new Error('Endpoint did not confirm the send')
+
+      // contact.php answers ok. The hosted form services answer success, and
+      // some of them spell the true as a string. Anything else is a failure,
+      // however friendly it looks.
+      const confirmed =
+        body?.ok === true || body?.success === true || body?.success === 'true'
+      if (!confirmed) throw new Error('Endpoint did not confirm the send')
 
       setStatus('sent')
       setForm(initialForm)
@@ -286,8 +315,24 @@ function ContactForm() {
     <form
       onSubmit={submit}
       noValidate
+      {...(FORM_MODE === 'native' ? { action: FORM_ENDPOINT, method: 'post' } : {})}
       className="glass-strong relative rounded-lg p-6 sm:p-8"
     >
+      {/**
+       * Native mode only. The services picker is a custom control with no
+       * input of its own, so the chosen services need carrying by hand. The
+       * underscore keys are how the hosted form services take their settings;
+       * every one of them is ignored by anything that does not know them.
+       */}
+      {FORM_MODE === 'native' && (
+        <>
+          <input type="hidden" name="services" value={form.services.join(', ')} />
+          <input type="hidden" name="_subject" value={`[Adsmith] Enquiry from ${form.name}`} />
+          <input type="hidden" name="_template" value="table" />
+          <input type="hidden" name="_captcha" value="false" />
+        </>
+      )}
+
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Name" htmlFor="name" error={errors.name}>
           <input

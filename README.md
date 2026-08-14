@@ -181,7 +181,31 @@ Two optional environment variables. Copy `.env.example` to `.env` for local work
 | Variable | Effect when set |
 | --- | --- |
 | `VITE_FORM_ENDPOINT` | Post somewhere other than `/contact.php`. Needed on hosts without PHP. |
+| `VITE_FORM_MODE` | `native` makes the browser submit the form and navigate, rather than posting in the background. See below. |
 | `VITE_BOOKING_URL` | The booking card shows a single "See available times" button pointing at your Cal.com or Calendly page. |
+
+### Trying the form before there is any hosting
+
+`contact.php` needs a PHP server, so the form cannot send from a file opened
+off disk, and neither can a background post to an outside service: browsers
+refuse those from a local file. A form the browser submits itself is not
+refused, which is what `native` mode is for.
+
+```bash
+VITE_FORM_MODE=native \
+VITE_FORM_ENDPOINT=https://formsubmit.co/you@example.com \
+  npm run build
+```
+
+Open `dist/index.html` and submit. The first one asks that address to confirm
+itself; after that they arrive as email. It is a way to try the thing end to
+end, not a way to run it: enquiries pass through somebody else's server, and
+the address sits in the built JavaScript for anyone to read. Build without
+those two variables for the copy that gets uploaded.
+
+**A caveat worth stating.** The response shapes for the hosted form services
+are taken from their documentation rather than seen working: the network here
+cannot reach them. `contact.php` is the path that has been tested end to end.
 
 Submissions arrive as JSON:
 
