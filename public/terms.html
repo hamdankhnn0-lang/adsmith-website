@@ -37,7 +37,11 @@
         font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
         font-size: 16px;
         line-height: 1.7;
-        -webkit-font-smoothing: antialiased;
+      }
+      /* Grey antialiasing only on dense screens. Forcing it everywhere turns
+         off subpixel rendering and softens light copy on dark grounds. */
+      @media (min-resolution: 2dppx) {
+        body { -webkit-font-smoothing: antialiased; }
       }
       .wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 96px; }
       header { border-bottom: 1px solid var(--line); padding-bottom: 28px; margin-bottom: 44px; }

@@ -132,8 +132,23 @@
     font-size: 1rem;
     line-height: 1.6;
     font-synthesis-weight: none;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /**
+   * Grey antialiasing only where it costs nothing.
+   *
+   * Forcing it everywhere is the usual habit, and it wrecks text on ordinary
+   * Windows and Linux screens: it switches off subpixel rendering, which is
+   * the thing that makes edges look sharper than the pixel grid should allow.
+   * Light copy on a dark ground shows the damage worst of all, and this site
+   * is exactly that. On screens dense enough that subpixel rendering buys
+   * nothing, grey is the nicer of the two, so it stays there and nowhere else.
+   */
+  @media (min-resolution: 2dppx) {
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
   }
 
   h1,
@@ -227,19 +242,42 @@
 
 /* --------------------------------------------------------- surface system */
 
-/** Frosted panel. Blur is capped so low end mobile does not choke on it. */
+/**
+ * Panel surfaces.
+ *
+ * These carry no backdrop blur, and that is deliberate. A blurred backdrop
+ * forces the browser to composite the panel on its own layer, and text on
+ * such a layer loses subpixel rendering: Windows in particular then paints
+ * every letter in flat grey and the copy goes soft. Nearly every word on this
+ * site sits on one of these panels, so the cost was the whole page.
+ *
+ * Almost nothing was bought with it either. Blur only shows when there is
+ * something behind worth smearing, and behind these panels is a near flat
+ * dark ground. The tints below are raised a touch to stand in for the
+ * saturate() that went with the blur, and the panels land within a shade of
+ * where they were. Use glass-float instead where content really does travel
+ * underneath.
+ */
 @utility glass {
-  background-color: rgb(255 255 255 / 0.04);
+  background-color: rgb(255 255 255 / 0.05);
   border: 1px solid rgb(255 255 255 / 0.09);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 
 @utility glass-strong {
-  background-color: rgb(255 255 255 / 0.07);
+  background-color: rgb(255 255 255 / 0.08);
   border: 1px solid rgb(255 255 255 / 0.14);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+
+/**
+ * The frosted treatment, kept for the two places the page scrolls underneath:
+ * the navbar capsule and the mobile menu. Here the blur is doing real work,
+ * and the grey text tradeoff buys something visible.
+ */
+@utility glass-float {
+  background-color: rgb(10 19 21 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.09);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 
 /** A hairline that catches light along the top edge, like brushed metal. */
