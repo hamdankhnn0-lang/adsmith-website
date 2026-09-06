@@ -1,0 +1,400 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum Role {
+  SUPER_ADMIN
+  BRANCH_MANAGER
+  ANALYST
+}
+
+enum FeedbackStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  IGNORED
+}
+
+enum FeedbackCategory {
+  FOOD_QUALITY
+  DELIVERY
+  STAFF_BEHAVIOR
+  CLEANLINESS
+  PACKAGING
+  WAITING_TIME
+  OVERALL_EXPERIENCE
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+  MIXED
+}
+
+enum ReviewTopicName {
+  FOOD_QUALITY
+  TASTE
+  DELIVERY
+  DELIVERY_TIME
+  STAFF
+  CUSTOMER_SERVICE
+  CLEANLINESS
+  PACKAGING
+  PRICE
+  VALUE
+  QUANTITY
+  PIZZA
+  BURGER
+  PASTA
+  WINGS
+  SAUCES
+  OTHER
+}
+
+enum ReviewResponseStatus {
+  DRAFT
+  APPROVED
+  POSTED
+  REJECTED
+}
+
+enum AlertType {
+  NEW_ONE_STAR
+  NEW_TWO_STAR
+  NEW_THREE_STAR
+  RATING_DROP
+  NEGATIVE_SPIKE
+  BRANCH_BELOW_TARGET
+  STALE_UNANSWERED
+  DELIVERY_COMPLAINT_SPIKE
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum OAuthProvider {
+  GOOGLE_BUSINESS_PROFILE
+}
+
+enum DataSource {
+  DEMO
+  MANUAL
+  GOOGLE_API
+}
+
+// ---------------------------------------------------------------------------
+// Users & Access Control
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(ANALYST)
+  branchId     String?
+  branch       Branch?  @relation(fields: [branchId], references: [id])
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  reviewResponses ReviewResponse[]
+  auditLogs       AuditLog[]
+
+  @@index([branchId])
+}
+
+// ---------------------------------------------------------------------------
+// Branches
+// ---------------------------------------------------------------------------
+
+model Branch {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  address         String?
+  city            String   @default("Peshawar")
+  isActive        Boolean  @default(true)
+  targetRating    Float    @default(4.5)
+  googleReviewUrl String?
+  googlePlaceId   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  users               User[]
+  googleLocation      GoogleLocation?
+  customerFeedback    CustomerFeedback[]
+  alerts              Alert[]
+  dailyReports        DailyReport[]
+  competitorLocations CompetitorLocation[]
+
+  @@index([slug])
+}
+
+// ---------------------------------------------------------------------------
+// Google Business Profile
+// ---------------------------------------------------------------------------
+
+model GoogleLocation {
+  id               String    @id @default(cuid())
+  branchId         String    @unique
+  branch           Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  googleAccountId  String?
+  googleLocationId String?
+  locationName     String?
+  connected        Boolean   @default(false)
+  lastSyncedAt     DateTime?
+  lastSyncError    String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  reviews GoogleReview[]
+}
+
+model OAuthToken {
+  id              String        @id @default(cuid())
+  provider        OAuthProvider @default(GOOGLE_BUSINESS_PROFILE)
+  googleAccountId String?
+  accountId       String?
+  locationId      String?
+  accessToken     String // encrypted at rest
+  refreshToken    String // encrypted at rest
+  scope           String?
+  expiresAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([provider])
+}
+
+model GoogleReview {
+  id               String         @id @default(cuid())
+  googleLocationId String
+  googleLocation   GoogleLocation @relation(fields: [googleLocationId], references: [id], onDelete: Cascade)
+  googleReviewId   String         @unique
+  reviewerName     String?
+  reviewerPhotoUrl String?
+  rating           Int
+  comment          String?
+  createTime       DateTime
+  updateTime       DateTime?
+  replyComment     String?
+  replyUpdateTime  DateTime?
+  reviewReplyUrl   String?
+  source           DataSource     @default(GOOGLE_API)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  analysis  ReviewAnalysis?
+  responses ReviewResponse[]
+
+  @@index([googleLocationId])
+  @@index([rating])
+  @@index([createTime])
+}
+
+// ---------------------------------------------------------------------------
+// Private Customer Feedback (QR flow)
+// ---------------------------------------------------------------------------
+
+model CustomerFeedback {
+  id                String           @id @default(cuid())
+  branchId          String
+  branch            Branch           @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  rating            Int
+  feedbackText      String?
+  customerName      String?
+  customerPhone     String?
+  foodQualityRating Int?
+  deliveryRating    Int?
+  staffRating       Int?
+  cleanlinessRating Int?
+  packagingRating   Int?
+  waitingTimeRating Int?
+  category          FeedbackCategory @default(OVERALL_EXPERIENCE)
+  status            FeedbackStatus   @default(NEW)
+  staffNotes        String?
+  resolutionStatus  String?
+  wentToGoogle      Boolean          @default(false)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([branchId])
+  @@index([rating])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// AI Review Analysis
+// ---------------------------------------------------------------------------
+
+model ReviewAnalysis {
+  id             String       @id @default(cuid())
+  googleReviewId String       @unique
+  googleReview   GoogleReview @relation(fields: [googleReviewId], references: [id], onDelete: Cascade)
+  sentiment      Sentiment
+  summary        String?
+  model          String       @default("rule-based")
+  analyzedAt     DateTime     @default(now())
+
+  topics ReviewTopic[]
+}
+
+model ReviewTopic {
+  id               String          @id @default(cuid())
+  reviewAnalysisId String
+  reviewAnalysis   ReviewAnalysis  @relation(fields: [reviewAnalysisId], references: [id], onDelete: Cascade)
+  topic            ReviewTopicName
+  sentiment        Sentiment
+  mentionText      String?
+
+  @@index([topic])
+  @@index([reviewAnalysisId])
+}
+
+model ReviewResponse {
+  id             String               @id @default(cuid())
+  googleReviewId String
+  googleReview   GoogleReview         @relation(fields: [googleReviewId], references: [id], onDelete: Cascade)
+  draftText      String
+  status         ReviewResponseStatus @default(DRAFT)
+  generatedByAI  Boolean              @default(true)
+  approvedById   String?
+  approvedBy     User?                @relation(fields: [approvedById], references: [id])
+  postedAt       DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@index([googleReviewId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Competitors
+// ---------------------------------------------------------------------------
+
+model Competitor {
+  id        String   @id @default(cuid())
+  name      String
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  locations CompetitorLocation[]
+}
+
+model CompetitorLocation {
+  id            String     @id @default(cuid())
+  competitorId  String
+  competitor    Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+  branchId      String?
+  branch        Branch?    @relation(fields: [branchId], references: [id])
+  locationLabel String?
+  googlePlaceId String?
+  rating        Float
+  reviewCount   Int
+  monthlyGrowth Int        @default(0)
+  source        DataSource @default(MANUAL)
+  lastUpdatedAt DateTime   @default(now())
+  createdAt     DateTime   @default(now())
+
+  reviews CompetitorReview[]
+
+  @@index([competitorId])
+}
+
+model CompetitorReview {
+  id                   String             @id @default(cuid())
+  competitorLocationId String
+  competitorLocation   CompetitorLocation @relation(fields: [competitorLocationId], references: [id], onDelete: Cascade)
+  rating               Int
+  comment              String?
+  sentiment            Sentiment?
+  reviewDate           DateTime
+  source               DataSource         @default(MANUAL)
+  createdAt            DateTime           @default(now())
+
+  @@index([competitorLocationId])
+}
+
+// ---------------------------------------------------------------------------
+// Alerts & Reports
+// ---------------------------------------------------------------------------
+
+model Alert {
+  id                String        @id @default(cuid())
+  branchId          String?
+  branch            Branch?       @relation(fields: [branchId], references: [id])
+  type              AlertType
+  severity          AlertSeverity @default(WARNING)
+  title             String
+  description       String
+  recommendedAction String?
+  relatedReviewId   String?
+  isRead            Boolean       @default(false)
+  isResolved        Boolean       @default(false)
+  createdAt         DateTime      @default(now())
+
+  @@index([branchId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model DailyReport {
+  id                String   @id @default(cuid())
+  reportDate        DateTime
+  branchId          String?
+  branch            Branch?  @relation(fields: [branchId], references: [id])
+  overallRating     Float
+  newReviewsCount   Int
+  fiveStarCount     Int
+  fourStarCount     Int
+  threeStarCount    Int
+  twoStarCount      Int
+  oneStarCount      Int
+  bestBranchName    String?
+  bestBranchRating  Float?
+  worstBranchName   String?
+  worstBranchRating Float?
+  topComplaint      String?
+  topPositiveTopic  String?
+  unansweredCount   Int
+  criticalCount     Int
+  createdAt         DateTime @default(now())
+
+  @@unique([reportDate, branchId])
+  @@index([reportDate])
+}
+
+// ---------------------------------------------------------------------------
+// Audit Log
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
