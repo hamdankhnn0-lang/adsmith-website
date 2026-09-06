@@ -12,6 +12,46 @@ an AI-generated reply — a human manager must always click "Approve & Reply."
 
 ---
 
+## Get a live, shareable link (Vercel, ~3 minutes)
+
+1. **Create a free Postgres database** — [Neon](https://neon.tech) or
+   [Supabase](https://supabase.com) both work. Copy the connection string
+   (it looks like `postgresql://user:pass@host/dbname?sslmode=require`).
+2. **Click deploy** and paste that connection string in when Vercel asks for
+   `DATABASE_URL`. For the other required values:
+   - `NEXTAUTH_SECRET` / `TOKEN_ENCRYPTION_KEY` — Vercel lets you generate
+     random values inline, or run `openssl rand -base64 32` /
+     `openssl rand -hex 32` yourself.
+   - `NEXTAUTH_URL` / `APP_URL` — put a placeholder like
+     `https://placeholder.vercel.app` for now; you'll fix this in step 4.
+   - `SEED_SECRET` — make up any password-like string; you'll use it once in step 5.
+   - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `GOOGLE_REDIRECT_URI` /
+     `OPENAI_API_KEY` — optional, leave blank. The app runs fully in demo
+     mode without them.
+
+   [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhamdankhnn0-lang%2Fadsmith-website%2Ftree%2Fclaude%2Fpizza-box-review-dashboard-li1usf&env=DATABASE_URL%2CNEXTAUTH_SECRET%2CNEXTAUTH_URL%2CAPP_URL%2CTOKEN_ENCRYPTION_KEY%2CSEED_SECRET%2CGOOGLE_CLIENT_ID%2CGOOGLE_CLIENT_SECRET%2CGOOGLE_REDIRECT_URI%2COPENAI_API_KEY&envDescription=See%20README%20for%20how%20to%20generate%2Fobtain%20each%20value.&envLink=https%3A%2F%2Fgithub.com%2Fhamdankhnn0-lang%2Fadsmith-website%2Fblob%2Fclaude%2Fpizza-box-review-dashboard-li1usf%2FREADME.md&project-name=pizza-box-reputation-dashboard&repository-name=pizza-box-reputation-dashboard)
+
+3. Vercel builds the app (this runs Prisma migrations against your new
+   database automatically). Wait for "Congratulations" and note the
+   `*.vercel.app` URL it gives you.
+4. Go to **Project → Settings → Environment Variables**, update
+   `NEXTAUTH_URL` and `APP_URL` to your real `https://<your-project>.vercel.app`
+   URL, then **Deployments → ⋯ → Redeploy** (env var changes need a redeploy
+   to take effect).
+5. Populate demo data — one-time only — by sending a POST request with the
+   `SEED_SECRET` you set:
+   ```bash
+   curl -X POST https://<your-project>.vercel.app/api/admin/seed \
+     -H "x-seed-secret: <the SEED_SECRET you set>"
+   ```
+   (Or paste that URL into a tool like [Postman](https://www.postman.com/) /
+   your browser's dev console with a `fetch(..., {method:'POST', headers})`
+   call — any way of sending a POST with that header works.)
+6. Visit `https://<your-project>.vercel.app` and log in with
+   `admin@pizzabox.pk` / `PizzaBox@123`. That URL is your shareable link.
+
+---
+
 ## Tech stack
 
 - **Frontend/Backend:** Next.js 16 (App Router, Turbopack), TypeScript, Tailwind CSS v4
