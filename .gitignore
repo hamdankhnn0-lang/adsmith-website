@@ -15,3 +15,6 @@ dist-ssr
 
 # Fallback log written by contact.php when mail fails
 public/.enquiries.log
+
+# Launch video build: renders and captures, not source
+brag-output/
