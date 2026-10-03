@@ -38,8 +38,17 @@ const MAX_BODY_BYTES = 20000;
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
-/** Reply with a JSON status and stop. */
-function respond(int $code, array $payload): never
+/**
+ * Reply with a JSON status and stop.
+ *
+ * No `never` return type, deliberately. It documents what this does and it is
+ * what a modern codebase would write, but it only exists from PHP 8.1, and on
+ * anything older the file does not merely misbehave: it fails to parse, so the
+ * form dies and every enquiry is lost. A shared host can be moved to an older
+ * PHP version by its own defaults, without anyone touching this code. Not
+ * worth that risk for a line of annotation, so the floor here is PHP 7.4.
+ */
+function respond(int $code, array $payload)
 {
     http_response_code($code);
     echo json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
