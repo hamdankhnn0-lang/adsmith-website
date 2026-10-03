@@ -1,0 +1,4 @@
+# This is the staging copy on GitHub Pages, not the real site. Keep it out of
+# search results so it never competes with adsmithsolutions.com for the brand.
+User-agent: *
+Disallow: /

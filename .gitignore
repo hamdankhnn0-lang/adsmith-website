@@ -1,0 +1,20 @@
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+.vite
+
+# Editor
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# Fallback log written by contact.php when mail fails
+public/.enquiries.log
+
+# Launch video build: renders and captures, not source
+brag-output/
